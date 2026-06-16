@@ -156,7 +156,7 @@
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-l">Всего в выдаче</div><div class="kpi-v cwb" id="kTotal">—</div><div class="kpi-s" id="kBrands">уникальных брендов: —</div></div>
     <div class="kpi"><div class="kpi-l">Наших карточек</div><div class="kpi-v cgr" id="kOur">—</div><div class="kpi-s" id="kOurPos">лучшая позиция: —</div></div>
-    <div class="kpi"><div class="kpi-l">Клонов / подозр.</div><div class="kpi-v crd" id="kClones">—</div><div class="kpi-s">чужой бренд + мало отзывов</div></div>
+    <div class="kpi"><div class="kpi-l">Клонов / подозр.</div><div class="kpi-v crd" id="kClones">—</div><div class="kpi-s">чужой бренд + мало отзывов<br><a href="#complaint" onclick="document.getElementById('complaint').scrollIntoView({behavior:'smooth'});return false;" style="color:#CB11AB;font-size:10px;font-weight:600;text-decoration:none">⚠️ посмотреть заявку →</a></div></div>
     <div class="kpi"><div class="kpi-l">Медиана цены</div><div class="kpi-v cyl" id="kMedian">—</div><div class="kpi-s" id="kPriceRange">—</div></div>
     <div class="kpi"><div class="kpi-l">Сред. отзывов на карточку</div><div class="kpi-v cbl" id="kAvgRev">—</div><div class="kpi-s" id="kAvgRevSub">по всей выдаче</div></div>
   </div>
@@ -209,7 +209,7 @@
     <a class="ozon-btn" id="ozonLink" href="https://www.ozon.ru/search/?text=easyform" target="_blank">Открыть на Ozon →</a>
   </div>
 
-  <div class="cc">
+  <div class="cc" id="complaint">
     <div class="ch"><span class="ct">⚠️ Заявка в службу поддержки WB</span><button class="cp" onclick="copyC()">Скопировать</button></div>
     <div class="cb"><div class="cx" id="ctext">После обновления данных здесь появится готовый текст заявки.</div></div>
   </div>
@@ -352,15 +352,17 @@ function updAnalytics(){
     </div>`;
   }).join('');
 
-  // 2. Ценовые сегменты + розовая точка где наша средняя цена
+  // 2. Ценовые сегменты — фиксированный шаг 300 ₽ + розовая точка
   const prices=all.filter(p=>p.price>0).map(p=>p.price);
   if(prices.length){
-    const mn=Math.min(...prices), mx=Math.max(...prices);
-    const range=mx-mn||1;
-    const step=Math.ceil(range/5/50)*50||100;
+    const STEP=300;
+    const minPrice=Math.min(...prices);
+    // Начинаем с ближайшего снизу кратного 300
+    const start=Math.floor(minPrice/STEP)*STEP;
+    const max=Math.max(...prices);
     const buckets=[];
-    for(let i=0;i<5;i++){
-      const lo=mn+i*step, hi=mn+(i+1)*step;
+    for(let lo=start; lo<=max; lo+=STEP){
+      const hi=lo+STEP;
       const items=all.filter(p=>p.price>0&&p.price>=lo&&p.price<hi);
       if(items.length) buckets.push({lo,hi,cnt:items.length,avgRev:mean(items.map(p=>p.reviews||0))});
     }
@@ -368,42 +370,55 @@ function updAnalytics(){
     // Наша средняя цена
     const ourPrices=all.filter(p=>classify(p)==='our'&&p.price>0).map(p=>p.price);
     const ourAvgPrice=ourPrices.length?Math.round(ourPrices.reduce((a,b)=>a+b,0)/ourPrices.length):null;
-    document.getElementById('priceSegments').innerHTML=buckets.map(b=>{
+    // Цвета баров по насыщенности — от светлого к тёмному
+    const barColors=['#F5A0D8','#EF6FC0','#E040A8','#CB11AB','#9A0082'];
+    document.getElementById('priceSegments').innerHTML=buckets.map((b,i)=>{
       const barW=Math.round(b.cnt/maxCnt*100);
-      // Попадает ли наша средняя цена в этот сегмент?
+      const color=barColors[Math.min(i,barColors.length-1)];
       const ourInBucket=ourAvgPrice!==null&&ourAvgPrice>=b.lo&&ourAvgPrice<b.hi;
-      // Позиция точки внутри бара (относительно диапазона сегмента)
-      const dotPct=ourInBucket?Math.round((ourAvgPrice-b.lo)/(b.hi-b.lo)*100):null;
+      const dotPct=ourInBucket?Math.round((ourAvgPrice-b.lo)/STEP*100):null;
       return `<div class="price-row">
-        <span class="price-badge">${fmt(b.lo)}–${fmt(b.hi)} ₽</span>
+        <span class="price-badge" style="min-width:100px">${fmt(b.lo)}–${fmt(b.hi)} ₽</span>
         <div style="flex:1;margin:0 10px;position:relative">
-          <div style="height:8px;background:var(--bg);border-radius:4px;overflow:visible;position:relative">
-            <div style="height:100%;width:${barW}%;background:#E2DDD6;border-radius:4px"></div>
-            ${ourInBucket?`<div title="Наша средняя цена: ${fmt(ourAvgPrice)} ₽" style="position:absolute;top:50%;left:${dotPct}%;transform:translate(-50%,-50%);width:14px;height:14px;background:#CB11AB;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #CB11AB;cursor:help"></div>`:''}
+          <div style="height:10px;background:#EEE8E0;border-radius:5px;overflow:visible;position:relative">
+            <div style="height:100%;width:${barW}%;background:${color};border-radius:5px;opacity:.85"></div>
+            ${ourInBucket?`<div title="Наша средняя цена: ${fmt(ourAvgPrice)} ₽" style="position:absolute;top:50%;left:calc(${barW}%*${dotPct}/100);transform:translate(-50%,-50%);width:14px;height:14px;background:#CB11AB;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 2px #CB11AB;z-index:2"></div>`:''}
           </div>
-          ${ourInBucket?`<div style="font-size:9px;color:#CB11AB;font-weight:600;margin-top:3px;padding-left:${dotPct}%">▲ наши ${fmt(ourAvgPrice)} ₽</div>`:''}
+          ${ourInBucket?`<div style="font-size:9px;color:#CB11AB;font-weight:700;margin-top:2px">▲ наши ~${fmt(ourAvgPrice)} ₽</div>`:''}
         </div>
-        <span style="font-size:11px;color:var(--muted);white-space:nowrap">${b.cnt} тов.</span>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap;min-width:60px;text-align:right">${b.cnt} тов.</span>
       </div>`;
     }).join('');
-    // Если наша цена не попала ни в один бакет — показываем отдельно
     if(ourAvgPrice!==null&&!buckets.some(b=>ourAvgPrice>=b.lo&&ourAvgPrice<b.hi)){
-      document.getElementById('priceSegments').innerHTML+=`<div style="font-size:11px;color:#CB11AB;margin-top:8px">● Наша средняя цена: ${fmt(ourAvgPrice)} ₽</div>`;
+      document.getElementById('priceSegments').innerHTML+=`<div style="font-size:11px;color:#CB11AB;margin-top:8px;font-weight:600">● Наша средняя цена: ${fmt(ourAvgPrice)} ₽</div>`;
     }
   }
 
   // 3. Наши позиции
   const ourItems=all.map((p,i)=>({...p,rank:i+1})).filter(p=>classify(p)==='our');
+  const OUR_LIMIT=20;
+  const ourVisible=ourItems.slice(0,OUR_LIMIT);
+  const ourHidden=ourItems.slice(OUR_LIMIT);
   document.getElementById('ourPositions').innerHTML=ourItems.length
     ? `<table class="seg-table">
         <thead><tr><th>Позиция</th><th>Название</th><th>Цена</th><th>Отзывы</th><th>Рейтинг</th></tr></thead>
-        <tbody>${ourItems.map(p=>`<tr onclick="window.open('${esc(p.url)}','_blank')">
+        <tbody id="ourVisibleRows">${ourVisible.map(p=>`<tr onclick="window.open('${esc(p.url)}','_blank')">
           <td><span class="pn ptop">#${p.rank}</span></td>
           <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(p.name)}">${esc(p.name)}</td>
           <td style="white-space:nowrap">${fmt(p.price)} ₽</td>
           <td class="rh">${fmt(p.reviews)}</td>
           <td>${p.rating?(+p.rating).toFixed(1)+' ★':'—'}</td>
         </tr>`).join('')}</tbody>
+        ${ourHidden.length?`<tbody id="ourHiddenRows" style="display:none">${ourHidden.map(p=>`<tr onclick="window.open('${esc(p.url)}','_blank')">
+          <td><span class="pn ptop">#${p.rank}</span></td>
+          <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(p.name)}">${esc(p.name)}</td>
+          <td style="white-space:nowrap">${fmt(p.price)} ₽</td>
+          <td class="rh">${fmt(p.reviews)}</td>
+          <td>${p.rating?(+p.rating).toFixed(1)+' ★':'—'}</td>
+        </tr>`).join('')}</tbody>
+        <tbody><tr><td colspan="5" style="text-align:center;padding:8px">
+          <button class="bsm" style="font-size:11px;padding:4px 12px" onclick="const h=document.getElementById('ourHiddenRows');const open=h.style.display!=='none';h.style.display=open?'none':'';this.textContent=open?'Показать ещё ${ourHidden.length} ▼':'Свернуть ▲'">Показать ещё ${ourHidden.length} ▼</button>
+        </td></tr></tbody>`:''}
       </table>`
     : `<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Наших карточек не найдено в выдаче</div>`;
 
@@ -439,7 +454,7 @@ function renderT(){
   document.getElementById('wbPg').textContent=`${list.length} из ${fmt(S.total)} артикулов`;
   if(!list.length){ document.getElementById('wbT').innerHTML=`<div class="sb"><div class="si">🤷</div><div class="stit">Ничего не найдено</div></div>`; return; }
 
-  const LIMIT=50;
+  const LIMIT=20;
   const visible=list.slice(0,LIMIT);
   const hidden=list.slice(LIMIT);
 
