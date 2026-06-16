@@ -18,10 +18,8 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
-
   .wrap{max-width:1200px;margin:0 auto;padding:20px 24px}
 
-  /* HEADER */
   .header-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
   .logo{display:flex;align-items:center;gap:14px}
   .logo-icon{width:44px;height:44px;border-radius:10px;background:var(--text);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;letter-spacing:-1px;flex-shrink:0}
@@ -35,7 +33,6 @@
   .btn-primary:hover{opacity:.85}
   .btn-primary:disabled{opacity:.4;cursor:not-allowed}
 
-  /* SETTINGS */
   .settings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:12px}
   .field-group{display:flex;flex-direction:column;gap:4px}
   .field-label{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
@@ -47,7 +44,6 @@
   .toggle-btn.wb.active{background:var(--wb);border-color:var(--wb);color:#fff}
   .toggle-btn.ozon.active{background:var(--ozon);border-color:var(--ozon);color:#fff}
 
-  /* STATS */
   .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
   .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
   .stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
@@ -55,7 +51,6 @@
   .stat-sub{font-size:10px;color:var(--muted);margin-top:3px}
   .c-wb{color:var(--wb)} .c-ozon{color:var(--ozon)} .c-green{color:var(--green)} .c-red{color:var(--red)}
 
-  /* SECTIONS */
   .section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
   .section-head{padding:14px 20px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .platform-badge{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.5px}
@@ -67,7 +62,6 @@
   .ftab{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-family:inherit;transition:all .15s}
   .ftab.active{background:var(--text);color:#fff;border-color:var(--text)}
 
-  /* TABLE */
   .tbl-scroll{overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:12px}
   thead th{text-align:left;padding:8px 14px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;background:var(--bg)}
@@ -95,7 +89,6 @@
   .btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--radius-sm);padding:6px 16px;font-size:12px;cursor:pointer;font-family:inherit}
   .btn-sm:hover{border-color:var(--border-dark);color:var(--text)}
 
-  /* STATE */
   .state-box{text-align:center;padding:36px 20px;color:var(--muted)}
   .state-icon{font-size:28px;margin-bottom:8px}
   .state-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
@@ -104,7 +97,8 @@
   @keyframes spin{to{transform:rotate(360deg)}}
   .err-box{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;font-size:10px;color:var(--red);font-family:monospace;max-width:500px;margin-left:auto;margin-right:auto;text-align:left;word-break:break-all}
 
-  /* ЖАЛОБА */
+  .info-box{background:var(--ozon-bg);border:1px solid rgba(0,91,255,.2);border-radius:var(--radius-sm);padding:10px 14px;font-size:11px;color:var(--ozon);margin:10px 20px 14px;line-height:1.6}
+
   .complaint-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
   .complaint-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
   .complaint-title{font-size:13px;font-weight:600}
@@ -113,7 +107,6 @@
   .copy-btn{background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s}
   .copy-btn:hover{opacity:.85}
 
-  /* ИСТОРИЯ */
   .history-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
   .history-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
   .history-title{font-size:13px;font-weight:600}
@@ -126,17 +119,12 @@
   #toast{position:fixed;bottom:18px;right:18px;background:var(--text);color:#fff;padding:9px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;transform:translateY(50px);opacity:0;transition:all .2s;z-index:999}
   #toast.show{transform:translateY(0);opacity:1}
 
-  @media(max-width:768px){
-    .stats-row{grid-template-columns:repeat(2,1fr)}
-    #proxyUrl{width:180px}
-    .wrap{padding:12px}
-  }
+  @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}#proxyUrl{width:180px}.wrap{padding:12px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- HEADER -->
   <div class="header-card">
     <div class="logo">
       <div class="logo-icon">EF</div>
@@ -152,10 +140,9 @@
     </div>
   </div>
 
-  <!-- SETTINGS -->
   <div class="settings-card">
     <div class="field-group">
-      <div class="field-label">URL воркера</div>
+      <div class="field-label">URL воркера (для WB)</div>
       <input class="field-input" type="text" id="proxyUrl" value="https://clon.ooo6311ooo.workers.dev">
     </div>
     <div class="field-group">
@@ -163,7 +150,7 @@
       <input class="field-input" type="text" id="searchQuery" value="easyform">
     </div>
     <div class="field-group">
-      <div class="field-label">Мин. отзывов</div>
+      <div class="field-label">Мин. отзывов → «Наш»</div>
       <input class="field-input" type="number" id="minReviews" value="6">
     </div>
     <div class="field-group">
@@ -175,7 +162,6 @@
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="stats-row">
     <div class="stat-card">
       <div class="stat-label">WB — найдено</div>
@@ -190,7 +176,7 @@
     <div class="stat-card">
       <div class="stat-label">Клонов выявлено</div>
       <div class="stat-value c-red" id="cloneCount">—</div>
-      <div class="stat-sub">используют наш бренд, мало отзывов</div>
+      <div class="stat-sub">чужой бренд + мало отзывов</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Лучшая позиция WB</div>
@@ -199,7 +185,7 @@
     </div>
   </div>
 
-  <!-- WB -->
+  <!-- WB — через воркер -->
   <div class="section-card">
     <div class="section-head">
       <span class="platform-badge badge-wb">WILDBERRIES</span>
@@ -216,12 +202,15 @@
     <div id="wbLoadMore" style="display:none" class="load-more-row"><button class="btn-sm" onclick="loadMore('wb')">Загрузить ещё</button></div>
   </div>
 
-  <!-- OZON -->
+  <!-- OZON — напрямую из браузера -->
   <div class="section-card">
     <div class="section-head">
       <span class="platform-badge badge-ozon">OZON</span>
       <span class="section-title">Результаты поиска</span>
       <span class="section-count" id="ozPageInfo"></span>
+    </div>
+    <div class="info-box">
+      ℹ️ Ozon защищён от серверного парсинга — данные загружаются напрямую из вашего браузера. Работает только при открытии файла через веб-сервер (не <code>file://</code>). Подробнее — см. инструкцию ниже.
     </div>
     <div class="filter-row">
       <button class="ftab active" onclick="setFilter('oz','all',this)">Все</button>
@@ -251,15 +240,8 @@
       <button class="btn-sm" onclick="clearHistory()">Очистить</button>
     </div>
     <table class="hist-table">
-      <thead><tr>
-        <th>Дата</th><th>Запрос</th>
-        <th>WB всего</th><th>WB наших</th>
-        <th>Ozon всего</th><th>Ozon наших</th>
-        <th>Клоны</th>
-      </tr></thead>
-      <tbody id="historyBody">
-        <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:16px">Пока нет данных</td></tr>
-      </tbody>
+      <thead><tr><th>Дата</th><th>Запрос</th><th>WB всего</th><th>WB наших</th><th>Ozon всего</th><th>Ozon наших</th><th>Клоны</th></tr></thead>
+      <tbody id="historyBody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:16px">Пока нет данных</td></tr></tbody>
     </table>
   </div>
 
@@ -268,7 +250,7 @@
 
 <script>
 // ══════════════════════════════════════════════════════
-// Наши бренды — точное совпадение (без учёта регистра)
+// Наши бренды (точное совпадение без учёта регистра)
 // ══════════════════════════════════════════════════════
 const OUR_BRANDS = ['easyform', 'easy form', 'ezfr', 'vaivai', 'vai vai'];
 
@@ -283,28 +265,20 @@ renderHistory();
 
 function getMin() { return parseInt(document.getElementById('minReviews').value) || 6; }
 
-// Бренд совпадает с нашим?
 function isBrandOurs(p) {
   const b = (p.brand||'').toLowerCase().trim();
   const s = (p.supplier||'').toLowerCase().trim();
   return OUR_BRANDS.some(x => b === x || b.includes(x) || s === x || s.includes(x));
 }
-
-// Название/бренд упоминает easyform (для клонов)?
 function mentionsEasyForm(p) {
-  const b = (p.brand||'').toLowerCase();
-  const n = (p.name||'').toLowerCase();
+  const b = (p.brand||'').toLowerCase(), n = (p.name||'').toLowerCase();
   return b.includes('easyform') || b.includes('easy form') || b.includes('ezfr') ||
          n.includes('easyform') || n.includes('easy form');
 }
-
 function classify(p) {
   const reviews = p.reviews || 0;
-  const min     = getMin();
-  // НАШ: бренд наш И отзывов достаточно
-  if (isBrandOurs(p) && reviews >= min) return 'our';
-  // КЛОН: упоминает EasyForm в бренде/названии, но отзывов мало (или бренд не наш)
-  if (mentionsEasyForm(p) && (!isBrandOurs(p) || reviews < min)) return 'clone';
+  if (isBrandOurs(p) && reviews >= getMin()) return 'our';
+  if (mentionsEasyForm(p) && (!isBrandOurs(p) || reviews < getMin())) return 'clone';
   return 'other';
 }
 
@@ -323,7 +297,6 @@ function setFilter(pl, f, el) {
   renderTable(pl);
 }
 
-// ── Scan ──────────────────────────────────────
 async function runScan() {
   const btn   = document.getElementById('refreshBtn');
   const proxy = document.getElementById('proxyUrl').value.trim().replace(/\/+$/,'');
@@ -331,54 +304,114 @@ async function runScan() {
   btn.disabled = true; btn.textContent = 'Загрузка...';
 
   await Promise.allSettled([
-    state.wb.enabled ? fetchPlatform('wb',  proxy, query, 1) : Promise.resolve(),
-    state.oz.enabled ? fetchPlatform('oz',  proxy, query, 1) : Promise.resolve(),
+    state.wb.enabled ? fetchWB(proxy, query, 1)   : Promise.resolve(),
+    state.oz.enabled ? fetchOzon(query, 1)         : Promise.resolve(),
   ]);
 
   const all = [...state.wb.products, ...state.oz.products];
   const e = {
-    date:    new Date().toLocaleString('ru'), query,
-    wbTotal: state.wb.total,
-    wbOur:   state.wb.products.filter(p=>classify(p)==='our').length,
-    ozTotal: state.oz.total,
-    ozOur:   state.oz.products.filter(p=>classify(p)==='our').length,
-    clones:  all.filter(p=>classify(p)==='clone').length,
+    date: new Date().toLocaleString('ru'), query,
+    wbTotal: state.wb.total, wbOur: state.wb.products.filter(p=>classify(p)==='our').length,
+    ozTotal: state.oz.total, ozOur: state.oz.products.filter(p=>classify(p)==='our').length,
+    clones: all.filter(p=>classify(p)==='clone').length,
   };
   state.history.unshift(e);
   if (state.history.length > 30) state.history.length = 30;
   try { localStorage.setItem('ef_hist', JSON.stringify(state.history)); } catch(x){}
 
-  renderHistory();
-  updateStats();
-  updateComplaint();
+  renderHistory(); updateStats(); updateComplaint();
   document.getElementById('lastUpdateLabel').textContent = 'Обновлено: ' + new Date().toLocaleTimeString('ru');
   btn.disabled = false; btn.textContent = 'Обновить данные';
   showToast('Данные обновлены');
 }
 
-async function fetchPlatform(pl, proxy, query, page) {
-  const isWB = pl==='wb';
-  const elId = isWB?'wbTable':'ozTable';
-  document.getElementById(elId).innerHTML =
-    `<div class="state-box"><div class="spinner"></div><div class="state-title">Загрузка ${isWB?'Wildberries':'Ozon'}...</div></div>`;
+// WB — через воркер (Cloudflare IP не блокируется WB)
+async function fetchWB(proxy, query, page) {
+  const el = document.getElementById('wbTable');
+  el.innerHTML = `<div class="state-box"><div class="spinner"></div><div class="state-title">Загрузка WB...</div></div>`;
   try {
-    const resp = await fetch(`${proxy}/${isWB?'wb':'ozon'}?q=${encodeURIComponent(query)}&page=${page}`);
+    const resp = await fetch(`${proxy}/wb?q=${encodeURIComponent(query)}&page=${page}`);
     const data = await resp.json();
     if (data.error && !data.products?.length) throw new Error(data.error);
-    if (page===1) state[pl].products = data.products||[];
-    else          state[pl].products = [...state[pl].products, ...(data.products||[])];
-    state[pl].total = data.total || state[pl].products.length;
-    state[pl].page  = page;
-    renderTable(pl);
-    document.getElementById(isWB?'wbLoadMore':'ozLoadMore').style.display =
-      state[pl].products.length < state[pl].total ? 'block' : 'none';
+    if (page===1) state.wb.products = data.products||[];
+    else          state.wb.products = [...state.wb.products, ...(data.products||[])];
+    state.wb.total = data.total || state.wb.products.length;
+    state.wb.page  = page;
+    renderTable('wb');
+    document.getElementById('wbLoadMore').style.display =
+      state.wb.products.length < state.wb.total ? 'block' : 'none';
   } catch(e) {
-    document.getElementById(elId).innerHTML = `
+    el.innerHTML = `<div class="state-box"><div class="state-icon">❌</div><div class="state-title">Ошибка WB</div><div class="err-box">${esc(String(e))}</div></div>`;
+  }
+}
+
+// OZON — напрямую из браузера (браузер проходит JS-защиту, сервер — нет)
+async function fetchOzon(query, page) {
+  const el = document.getElementById('ozTable');
+  el.innerHTML = `<div class="state-box"><div class="spinner"></div><div class="state-title">Загрузка Ozon из браузера...</div></div>`;
+  try {
+    const ozonUrl = `https://www.ozon.ru/api/composer-api.bx/page/json/v2?url=${encodeURIComponent(`/search/?text=${encodeURIComponent(query)}&page=${page}`)}`;
+    const resp = await fetch(ozonUrl, {
+      credentials: 'include', // передаём куки браузера — это ключ к успеху
+      headers: {
+        'Accept': 'application/json',
+        'Accept-Language': 'ru-RU,ru;q=0.9',
+        'x-o3-app-name': 'ozonclub',
+        'x-o3-app-version': '1.0.0',
+        'x-o3-platform': 'web',
+      }
+    });
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    let products = [], total = 0;
+    if (data?.widgetStates) {
+      for (const val of Object.values(data.widgetStates)) {
+        if (typeof val !== 'string') continue;
+        try {
+          const p = JSON.parse(val);
+          if (!p?.items?.length) continue;
+          total    = p.total || p.items.length;
+          products = p.items.map(item => ({
+            id:       String(item.sku || item.id || ''),
+            name:     item.name || (item.title?.textList||[])[0] || '',
+            brand:    item.brandName || item.brand || '',
+            price:    item.price?.price         ? parseInt(item.price.price)         : 0,
+            oldPrice: item.price?.originalPrice ? parseInt(item.price.originalPrice) : 0,
+            rating:   parseFloat(item.rating)   || 0,
+            reviews:  parseInt(item.reviewsCount) || 0,
+            url:      `https://www.ozon.ru${item.action?.link || item.link || ''}`,
+            img:      item.tileImage?.src || item.image?.src || '',
+          }));
+          break;
+        } catch { continue; }
+      }
+    }
+
+    if (page===1) state.oz.products = products;
+    else          state.oz.products = [...state.oz.products, ...products];
+    state.oz.total = total || state.oz.products.length;
+    state.oz.page  = page;
+    renderTable('oz');
+    document.getElementById('ozLoadMore').style.display =
+      state.oz.products.length < state.oz.total ? 'block' : 'none';
+
+  } catch(e) {
+    const isFileProtocol = location.protocol === 'file:';
+    document.getElementById('ozTable').innerHTML = `
       <div class="state-box">
         <div class="state-icon">❌</div>
-        <div class="state-title">Ошибка загрузки ${isWB?'WB':'Ozon'}</div>
-        <div class="state-sub">${isWB?'Проверьте воркер':'Ozon блокирует запросы с Cloudflare IP — это известная проблема, решение в разработке'}</div>
-        <div class="err-box">${esc(String(e))}</div>
+        <div class="state-title">Ozon недоступен</div>
+        <div class="state-sub">
+          ${isFileProtocol
+            ? `Файл открыт как <code>file://</code> — браузер блокирует запросы.<br><br>
+               Запустите локальный сервер:<br>
+               <strong>python -m http.server 8080</strong><br>
+               Затем откройте <strong>http://localhost:8080/easyform-dashboard.html</strong>`
+            : `Ошибка: ${esc(String(e))}`
+          }
+        </div>
       </div>`;
   }
 }
@@ -386,36 +419,28 @@ async function fetchPlatform(pl, proxy, query, page) {
 function loadMore(pl) {
   const proxy = document.getElementById('proxyUrl').value.trim().replace(/\/+$/,'');
   const query = document.getElementById('searchQuery').value.trim();
-  fetchPlatform(pl, proxy, query, (state[pl].page||1)+1);
+  if (pl==='wb') fetchWB(proxy, query, (state.wb.page||1)+1);
+  else           fetchOzon(query, (state.oz.page||1)+1);
 }
 
 function renderTable(pl) {
   const isWB = pl==='wb', data = state[pl];
   const elId = isWB?'wbTable':'ozTable', pgId = isWB?'wbPageInfo':'ozPageInfo';
-
   const list = data.products.filter(p => {
     const c = classify(p);
     return data.filter==='all'?true: data.filter==='our'?c==='our': data.filter==='clone'?c==='clone': c==='other';
   });
   document.getElementById(pgId).textContent = `${list.length} из ${fmt(data.total)} артикулов`;
-
   if (!list.length) {
     document.getElementById(elId).innerHTML =
       `<div class="state-box"><div class="state-icon">🤷</div><div class="state-title">Ничего не найдено</div><div class="state-sub">Смените фильтр или порог отзывов</div></div>`;
     return;
   }
-
   const rows = list.map(p => {
-    const cls  = classify(p);
-    const rank = data.products.indexOf(p)+1;
-    const rev  = p.reviews||0;
-    const disc = p.oldPrice&&p.price&&p.oldPrice>p.price ? Math.round((1-p.price/p.oldPrice)*100) : 0;
-    const tagHtml = cls==='our'
-      ? `<span class="tag tag-our">✅ Наш</span>`
-      : cls==='clone'
-      ? `<span class="tag tag-clone">⚠️ Клон</span>`
-      : `<span class="tag tag-other">—</span>`;
-    const revCls = rev===0?'rev-zero': rev>=getMin()?'rev-high':'rev-low';
+    const cls=classify(p), rank=data.products.indexOf(p)+1, rev=p.reviews||0;
+    const disc=p.oldPrice&&p.price&&p.oldPrice>p.price?Math.round((1-p.price/p.oldPrice)*100):0;
+    const tagHtml=cls==='our'?`<span class="tag tag-our">✅ Наш</span>`:cls==='clone'?`<span class="tag tag-clone">⚠️ Клон</span>`:`<span class="tag tag-other">—</span>`;
+    const revCls=rev===0?'rev-zero':rev>=getMin()?'rev-high':'rev-low';
     return `<tr onclick="window.open('${esc(p.url)}','_blank')">
       <td><span class="pos-num ${rank<=10?'pos-top':''}">${rank}</span></td>
       <td>${tagHtml}</td>
@@ -427,42 +452,32 @@ function renderTable(pl) {
       <td><a class="tbl-link" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
     </tr>`;
   }).join('');
-
   document.getElementById(elId).innerHTML = `<div class="tbl-scroll"><table>
     <thead><tr><th>№</th><th>Статус</th><th>Бренд</th><th>Название</th><th>Цена</th><th>Рейтинг</th><th>Отзывы</th><th>Ссылка</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+    <tbody>${rows}</tbody></table></div>`;
 }
 
 function updateStats() {
-  const wbOur  = state.wb.products.filter(p=>classify(p)==='our').length;
-  const ozOur  = state.oz.products.filter(p=>classify(p)==='our').length;
-  const clones = [...state.wb.products,...state.oz.products].filter(p=>classify(p)==='clone').length;
-  const ourIdx = state.wb.products.findIndex(p=>classify(p)==='our');
-  document.getElementById('wbTotal').textContent    = fmt(state.wb.total)||'—';
-  document.getElementById('wbOurCount').textContent = `наших: ${wbOur}`;
-  document.getElementById('ozTotal').textContent    = fmt(state.oz.total)||'—';
-  document.getElementById('ozOurCount').textContent = `наших: ${ozOur}`;
-  document.getElementById('cloneCount').textContent = clones;
-  document.getElementById('topPos').textContent     = ourIdx>=0?`#${ourIdx+1}`:'—';
-  document.getElementById('topPosName').textContent = ourIdx>=0
-    ? (state.wb.products[ourIdx].name||'').slice(0,32)+'…' : 'нет в топе';
+  const wbOur=state.wb.products.filter(p=>classify(p)==='our').length;
+  const ozOur=state.oz.products.filter(p=>classify(p)==='our').length;
+  const clones=[...state.wb.products,...state.oz.products].filter(p=>classify(p)==='clone').length;
+  const ourIdx=state.wb.products.findIndex(p=>classify(p)==='our');
+  document.getElementById('wbTotal').textContent=fmt(state.wb.total)||'—';
+  document.getElementById('wbOurCount').textContent=`наших: ${wbOur}`;
+  document.getElementById('ozTotal').textContent=fmt(state.oz.total)||'—';
+  document.getElementById('ozOurCount').textContent=`наших: ${ozOur}`;
+  document.getElementById('cloneCount').textContent=clones;
+  document.getElementById('topPos').textContent=ourIdx>=0?`#${ourIdx+1}`:'—';
+  document.getElementById('topPosName').textContent=ourIdx>=0?(state.wb.products[ourIdx].name||'').slice(0,32)+'…':'нет в топе';
 }
 
-// ── Жалоба ─────────────────────────────────────
 function updateComplaint() {
-  const clones = [...state.wb.products, ...state.oz.products].filter(p=>classify(p)==='clone');
-  const el = document.getElementById('complaintText');
-
-  if (!clones.length) {
-    el.textContent = 'Подозрительных клонов не обнаружено. Всё чисто ✅';
-    return;
-  }
-
-  const date = new Date().toLocaleDateString('ru', {day:'2-digit', month:'2-digit', year:'numeric'});
-  const list = clones.map((p,i) => `${i+1}. Артикул: ${p.id} | ${p.url}`).join('\n');
-
-  el.textContent =
+  const clones=[...state.wb.products,...state.oz.products].filter(p=>classify(p)==='clone');
+  const el=document.getElementById('complaintText');
+  if (!clones.length) { el.textContent='Подозрительных клонов не обнаружено. Всё чисто ✅'; return; }
+  const date=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const list=clones.map((p,i)=>`${i+1}. Артикул: ${p.id} | ${p.url}`).join('\n');
+  el.textContent=
 `Уважаемая служба поддержки Wildberries,
 
 Мы являемся правообладателем товарного знака «EasyForm». В ходе мониторинга поисковой выдачи по запросу «easyform» от ${date} выявлены товары, незаконно использующие наш товарный знак.
@@ -477,42 +492,25 @@ ${list}
 }
 
 function copyComplaint() {
-  const text = document.getElementById('complaintText').textContent;
-  navigator.clipboard.writeText(text)
-    .then(()=>showToast('Текст скопирован!'))
-    .catch(()=>{
-      const ta=document.createElement('textarea');
-      ta.value=text; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); document.body.removeChild(ta);
-      showToast('Текст скопирован!');
-    });
+  const text=document.getElementById('complaintText').textContent;
+  navigator.clipboard.writeText(text).then(()=>showToast('Текст скопирован!')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('Текст скопирован!');
+  });
 }
 
 function renderHistory() {
-  const tb = document.getElementById('historyBody');
-  if (!state.history.length) {
-    tb.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">Пока нет данных</td></tr>`;
-    return;
-  }
-  tb.innerHTML = state.history.map(h=>`
-    <tr>
-      <td style="color:var(--muted);white-space:nowrap">${h.date}</td>
-      <td><strong>${esc(h.query)}</strong></td>
-      <td class="c-wb">${fmt(h.wbTotal)}</td><td class="c-green">${h.wbOur}</td>
-      <td class="c-ozon">${fmt(h.ozTotal)}</td><td class="c-green">${h.ozOur}</td>
-      <td class="c-red">${h.clones}</td>
-    </tr>`).join('');
+  const tb=document.getElementById('historyBody');
+  if (!state.history.length){tb.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">Пока нет данных</td></tr>`;return;}
+  tb.innerHTML=state.history.map(h=>`<tr>
+    <td style="color:var(--muted);white-space:nowrap">${h.date}</td><td><strong>${esc(h.query)}</strong></td>
+    <td class="c-wb">${fmt(h.wbTotal)}</td><td class="c-green">${h.wbOur}</td>
+    <td class="c-ozon">${fmt(h.ozTotal)}</td><td class="c-green">${h.ozOur}</td>
+    <td class="c-red">${h.clones}</td></tr>`).join('');
 }
-function clearHistory() {
-  state.history=[]; try{localStorage.removeItem('ef_hist');}catch(e){}
-  renderHistory(); showToast('История очищена');
-}
+function clearHistory(){state.history=[];try{localStorage.removeItem('ef_hist');}catch(e){}renderHistory();showToast('История очищена');}
 
 let _tt;
-function showToast(msg) {
-  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
-  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2500);
-}
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2500);}
 </script>
 </body>
 </html>
