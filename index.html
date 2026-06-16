@@ -336,19 +336,23 @@ function updAnalytics(){
     .sort((a,b)=>b.avg-a.avg)
     .slice(0,8);
   const maxAvg=topBrands[0]?.avg||1;
-  const colors=['#CB11AB','#2E6B4F','#005BFF','#C07D2A','#B84040','#6B4FBF','#2E7A8A','#8A6B2E'];
-  document.getElementById('brandBars').innerHTML=topBrands.map(({brand,avg,cnt},i)=>`
-    <div class="bar-row">
-      <div class="bar-label" title="${esc(brand)}">${esc(brand)}</div>
+  const isOurBrand=(brand)=>OUR_BRANDS.some(x=>brand.toLowerCase().includes(x));
+  document.getElementById('brandBars').innerHTML=topBrands.map(({brand,avg,cnt})=>{
+    const ours=isOurBrand(brand);
+    const color=ours?'#CB11AB':'#C8C2B8';
+    const labelStyle=ours?'font-weight:700;color:#CB11AB':'color:var(--muted)';
+    return `<div class="bar-row">
+      <div class="bar-label" title="${esc(brand)}" style="${labelStyle}">${ours?'●&nbsp;':''}${esc(brand)}</div>
       <div class="bar-track">
-        <div class="bar-fill" style="width:${Math.round(avg/maxAvg*100)}%;background:${colors[i%colors.length]}">
+        <div class="bar-fill" style="width:${Math.round(avg/maxAvg*100)}%;background:${color}">
           <span class="bar-fill-val">${fmt(avg)}</span>
         </div>
       </div>
       <div class="bar-val">${cnt} карт.</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
-  // 2. Ценовые сегменты
+  // 2. Ценовые сегменты + розовая точка где наша средняя цена
   const prices=all.filter(p=>p.price>0).map(p=>p.price);
   if(prices.length){
     const mn=Math.min(...prices), mx=Math.max(...prices);
@@ -361,16 +365,31 @@ function updAnalytics(){
       if(items.length) buckets.push({lo,hi,cnt:items.length,avgRev:mean(items.map(p=>p.reviews||0))});
     }
     const maxCnt=Math.max(...buckets.map(b=>b.cnt))||1;
-    document.getElementById('priceSegments').innerHTML=buckets.map(b=>`
-      <div class="price-row">
+    // Наша средняя цена
+    const ourPrices=all.filter(p=>classify(p)==='our'&&p.price>0).map(p=>p.price);
+    const ourAvgPrice=ourPrices.length?Math.round(ourPrices.reduce((a,b)=>a+b,0)/ourPrices.length):null;
+    document.getElementById('priceSegments').innerHTML=buckets.map(b=>{
+      const barW=Math.round(b.cnt/maxCnt*100);
+      // Попадает ли наша средняя цена в этот сегмент?
+      const ourInBucket=ourAvgPrice!==null&&ourAvgPrice>=b.lo&&ourAvgPrice<b.hi;
+      // Позиция точки внутри бара (относительно диапазона сегмента)
+      const dotPct=ourInBucket?Math.round((ourAvgPrice-b.lo)/(b.hi-b.lo)*100):null;
+      return `<div class="price-row">
         <span class="price-badge">${fmt(b.lo)}–${fmt(b.hi)} ₽</span>
-        <div style="flex:1;margin:0 10px">
-          <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden">
-            <div style="height:100%;width:${Math.round(b.cnt/maxCnt*100)}%;background:#CB11AB;border-radius:4px"></div>
+        <div style="flex:1;margin:0 10px;position:relative">
+          <div style="height:8px;background:var(--bg);border-radius:4px;overflow:visible;position:relative">
+            <div style="height:100%;width:${barW}%;background:#E2DDD6;border-radius:4px"></div>
+            ${ourInBucket?`<div title="Наша средняя цена: ${fmt(ourAvgPrice)} ₽" style="position:absolute;top:50%;left:${dotPct}%;transform:translate(-50%,-50%);width:14px;height:14px;background:#CB11AB;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #CB11AB;cursor:help"></div>`:''}
           </div>
+          ${ourInBucket?`<div style="font-size:9px;color:#CB11AB;font-weight:600;margin-top:3px;padding-left:${dotPct}%">▲ наши ${fmt(ourAvgPrice)} ₽</div>`:''}
         </div>
-        <span style="font-size:11px;color:var(--muted);white-space:nowrap">${b.cnt} тов. · ${fmt(b.avgRev)} отз.</span>
-      </div>`).join('');
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap">${b.cnt} тов.</span>
+      </div>`;
+    }).join('');
+    // Если наша цена не попала ни в один бакет — показываем отдельно
+    if(ourAvgPrice!==null&&!buckets.some(b=>ourAvgPrice>=b.lo&&ourAvgPrice<b.hi)){
+      document.getElementById('priceSegments').innerHTML+=`<div style="font-size:11px;color:#CB11AB;margin-top:8px">● Наша средняя цена: ${fmt(ourAvgPrice)} ₽</div>`;
+    }
   }
 
   // 3. Наши позиции
@@ -419,7 +438,12 @@ function renderT(){
   });
   document.getElementById('wbPg').textContent=`${list.length} из ${fmt(S.total)} артикулов`;
   if(!list.length){ document.getElementById('wbT').innerHTML=`<div class="sb"><div class="si">🤷</div><div class="stit">Ничего не найдено</div></div>`; return; }
-  const rows=list.map(p=>{
+
+  const LIMIT=50;
+  const visible=list.slice(0,LIMIT);
+  const hidden=list.slice(LIMIT);
+
+  const makeRow=(p)=>{
     const cls=classify(p),rank=S.products.indexOf(p)+1,rev=p.reviews||0;
     const disc=p.oldPrice&&p.price&&p.oldPrice>p.price?Math.round((1-p.price/p.oldPrice)*100):0;
     const tag=cls==='our'?`<span class="tag tour">✅ Наш</span>`:cls==='clone'?`<span class="tag tcl">⚠️ Клон</span>`:`<span class="tag toth">—</span>`;
@@ -434,10 +458,25 @@ function renderT(){
       <td class="${rc}">${fmt(rev)}</td>
       <td><a class="tl" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
     </tr>`;
-  }).join('');
+  };
+
+  const hiddenRows=hidden.length
+    ? `<tbody id="hiddenRows" style="display:none">${hidden.map(makeRow).join('')}</tbody>
+       <tbody><tr><td colspan="8" style="text-align:center;padding:12px;border-top:1px solid var(--border)">
+         <button class="bsm" onclick="
+           const h=document.getElementById('hiddenRows');
+           const open=h.style.display!=='none';
+           h.style.display=open?'none':'';
+           this.textContent=open?'Показать ещё ${hidden.length} позиций ▼':'Свернуть ▲';
+         ">Показать ещё ${hidden.length} позиций ▼</button>
+       </td></tr></tbody>`
+    : '';
+
   document.getElementById('wbT').innerHTML=`<div class="ts"><table class="main-tbl">
     <thead><tr><th>№</th><th>Статус</th><th>Бренд</th><th>Название</th><th>Цена</th><th>Рейтинг</th><th>Отзывы</th><th>Ссылка</th></tr></thead>
-    <tbody>${rows}</tbody></table></div>`;
+    <tbody>${visible.map(makeRow).join('')}</tbody>
+    ${hiddenRows}
+  </table></div>`;
 }
 
 function updComplaint(){
