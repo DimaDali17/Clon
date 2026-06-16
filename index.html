@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EasyForm — Мониторинг поиска</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F0EDE6; --surface:#FAFAF7; --card:#FFFFFF; --border:#E2DDD6; --border-dark:#C8C2B8;
+    --text:#1A1A18; --muted:#8A857C;
+    --green:#2E6B4F; --green-bg:#EBF4EF; --green-border:#B8D9C8;
+    --red:#B84040; --red-bg:#FAEDED; --red-border:#E8BEBE;
+    --yellow:#C07D2A;
+    --wb:#CB11AB; --wb-bg:rgba(203,17,171,.07);
+    --ozon:#005BFF; --ozon-bg:rgba(0,91,255,.07);
+    --radius:14px; --radius-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+
+  .wrap{max-width:1200px;margin:0 auto;padding:20px 24px}
+
+  /* HEADER */
+  .header-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+  .logo{display:flex;align-items:center;gap:14px}
+  .logo-icon{width:44px;height:44px;border-radius:10px;background:var(--text);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;letter-spacing:-1px;flex-shrink:0}
+  .logo-title{font-size:20px;font-weight:700;letter-spacing:-.5px}
+  .logo-sub{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:1px}
+  .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .status-pill{display:flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500}
+  .status-dot{width:6px;height:6px;background:var(--green);border-radius:50%}
+  .last-update{font-size:11px;color:var(--muted)}
+  .btn-primary{background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;font-family:inherit}
+  .btn-primary:hover{opacity:.85}
+  .btn-primary:disabled{opacity:.4;cursor:not-allowed}
+
+  /* SETTINGS */
+  .settings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:12px}
+  .field-group{display:flex;flex-direction:column;gap:4px}
+  .field-label{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+  .field-input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:7px 11px;font-size:12px;font-family:inherit;transition:border-color .15s}
+  .field-input:focus{outline:none;border-color:var(--border-dark)}
+  #proxyUrl{width:260px} #searchQuery{width:110px} #minReviews{width:70px}
+  .toggle-group{display:flex;gap:5px}
+  .toggle-btn{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;transition:all .15s}
+  .toggle-btn.wb.active{background:var(--wb);border-color:var(--wb);color:#fff}
+  .toggle-btn.ozon.active{background:var(--ozon);border-color:var(--ozon);color:#fff}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  .stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+  .stat-value{font-size:26px;font-weight:700;line-height:1;letter-spacing:-1px}
+  .stat-sub{font-size:10px;color:var(--muted);margin-top:3px}
+  .c-wb{color:var(--wb)} .c-ozon{color:var(--ozon)} .c-green{color:var(--green)} .c-red{color:var(--red)}
+
+  /* SECTIONS */
+  .section-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+  .section-head{padding:14px 20px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .platform-badge{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.5px}
+  .badge-wb{background:var(--wb-bg);color:var(--wb)}
+  .badge-ozon{background:var(--ozon-bg);color:var(--ozon)}
+  .section-title{font-size:13px;font-weight:600}
+  .section-count{font-size:11px;color:var(--muted);margin-left:auto}
+  .filter-row{display:flex;gap:5px;padding:10px 20px;flex-wrap:wrap}
+  .ftab{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-family:inherit;transition:all .15s}
+  .ftab.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+  /* TABLE */
+  .tbl-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  thead th{text-align:left;padding:8px 14px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;background:var(--bg)}
+  tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:var(--bg)}
+  tbody td{padding:8px 14px;vertical-align:middle}
+  .tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;white-space:nowrap}
+  .tag-our{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+  .tag-clone{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+  .tag-other{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+  .pos-num{display:inline-block;width:26px;text-align:center;padding:2px 0;border-radius:5px;font-size:11px;font-weight:700;background:var(--bg);color:var(--muted)}
+  .pos-top{background:var(--green-bg);color:var(--green)}
+  .name-col{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .price-main{font-weight:600}
+  .price-old{font-size:10px;color:var(--muted);text-decoration:line-through}
+  .disc{font-size:10px;color:var(--red);margin-left:4px}
+  .stars{color:var(--yellow);letter-spacing:-1px;font-size:11px}
+  .rev-high{color:var(--green);font-weight:600}
+  .rev-low{color:var(--muted)}
+  .rev-zero{color:var(--red)}
+  .tbl-link{color:var(--muted);text-decoration:none;font-size:11px}
+  .tbl-link:hover{color:var(--text);text-decoration:underline}
+  .load-more-row{padding:12px 20px;text-align:center;border-top:1px solid var(--border)}
+  .btn-sm{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--radius-sm);padding:6px 16px;font-size:12px;cursor:pointer;font-family:inherit}
+  .btn-sm:hover{border-color:var(--border-dark);color:var(--text)}
+
+  /* STATE */
+  .state-box{text-align:center;padding:36px 20px;color:var(--muted)}
+  .state-icon{font-size:28px;margin-bottom:8px}
+  .state-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .state-sub{font-size:11px;line-height:1.6}
+  .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err-box{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;font-size:10px;color:var(--red);font-family:monospace;max-width:500px;margin-left:auto;margin-right:auto;text-align:left;word-break:break-all}
+
+  /* ЖАЛОБА */
+  .complaint-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+  .complaint-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .complaint-title{font-size:13px;font-weight:600}
+  .complaint-body{padding:16px 20px}
+  .complaint-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;font-size:12px;line-height:1.9;color:var(--text);white-space:pre-wrap;font-family:inherit;min-height:60px}
+  .copy-btn{background:var(--text);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s}
+  .copy-btn:hover{opacity:.85}
+
+  /* ИСТОРИЯ */
+  .history-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+  .history-head{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .history-title{font-size:13px;font-weight:600}
+  .hist-table{width:100%;border-collapse:collapse;font-size:11px}
+  .hist-table th{text-align:left;padding:7px 14px;font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg)}
+  .hist-table td{padding:7px 14px;border-bottom:1px solid var(--border)}
+  .hist-table tr:last-child td{border-bottom:none}
+  .hist-table tr:hover td{background:var(--bg)}
+
+  #toast{position:fixed;bottom:18px;right:18px;background:var(--text);color:#fff;padding:9px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;transform:translateY(50px);opacity:0;transition:all .2s;z-index:999}
+  #toast.show{transform:translateY(0);opacity:1}
+
+  @media(max-width:768px){
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    #proxyUrl{width:180px}
+    .wrap{padding:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header-card">
+    <div class="logo">
+      <div class="logo-icon">EF</div>
+      <div>
+        <div class="logo-title">EasyForm</div>
+        <div class="logo-sub">Мониторинг поиска · WB + Ozon</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-pill"><span class="status-dot"></span>Данные через Cloudflare Worker</div>
+      <span class="last-update" id="lastUpdateLabel">Ещё не обновлялось</span>
+      <button class="btn-primary" id="refreshBtn" onclick="runScan()">Обновить данные</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-card">
+    <div class="field-group">
+      <div class="field-label">URL воркера</div>
+      <input class="field-input" type="text" id="proxyUrl" value="https://clon.ooo6311ooo.workers.dev">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Поисковый запрос</div>
+      <input class="field-input" type="text" id="searchQuery" value="easyform">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Мин. отзывов</div>
+      <input class="field-input" type="number" id="minReviews" value="6">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Площадки</div>
+      <div class="toggle-group">
+        <button class="toggle-btn wb active" id="togWB" onclick="togglePlatform('wb')">WB</button>
+        <button class="toggle-btn ozon active" id="togOzon" onclick="togglePlatform('ozon')">Ozon</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">WB — найдено</div>
+      <div class="stat-value c-wb" id="wbTotal">—</div>
+      <div class="stat-sub" id="wbOurCount">наших: —</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Ozon — найдено</div>
+      <div class="stat-value c-ozon" id="ozTotal">—</div>
+      <div class="stat-sub" id="ozOurCount">наших: —</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Клонов выявлено</div>
+      <div class="stat-value c-red" id="cloneCount">—</div>
+      <div class="stat-sub">используют наш бренд, мало отзывов</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Лучшая позиция WB</div>
+      <div class="stat-value c-green" id="topPos">—</div>
+      <div class="stat-sub" id="topPosName">—</div>
+    </div>
+  </div>
+
+  <!-- WB -->
+  <div class="section-card">
+    <div class="section-head">
+      <span class="platform-badge badge-wb">WILDBERRIES</span>
+      <span class="section-title">Результаты поиска</span>
+      <span class="section-count" id="wbPageInfo"></span>
+    </div>
+    <div class="filter-row">
+      <button class="ftab active" onclick="setFilter('wb','all',this)">Все</button>
+      <button class="ftab" onclick="setFilter('wb','our',this)">✅ Наши</button>
+      <button class="ftab" onclick="setFilter('wb','clone',this)">⚠️ Клоны</button>
+      <button class="ftab" onclick="setFilter('wb','other',this)">Остальные</button>
+    </div>
+    <div id="wbTable"><div class="state-box"><div class="state-icon">🔍</div><div class="state-title">Нажмите «Обновить данные»</div></div></div>
+    <div id="wbLoadMore" style="display:none" class="load-more-row"><button class="btn-sm" onclick="loadMore('wb')">Загрузить ещё</button></div>
+  </div>
+
+  <!-- OZON -->
+  <div class="section-card">
+    <div class="section-head">
+      <span class="platform-badge badge-ozon">OZON</span>
+      <span class="section-title">Результаты поиска</span>
+      <span class="section-count" id="ozPageInfo"></span>
+    </div>
+    <div class="filter-row">
+      <button class="ftab active" onclick="setFilter('oz','all',this)">Все</button>
+      <button class="ftab" onclick="setFilter('oz','our',this)">✅ Наши</button>
+      <button class="ftab" onclick="setFilter('oz','clone',this)">⚠️ Клоны</button>
+      <button class="ftab" onclick="setFilter('oz','other',this)">Остальные</button>
+    </div>
+    <div id="ozTable"><div class="state-box"><div class="state-icon">🔍</div><div class="state-title">Нажмите «Обновить данные»</div></div></div>
+    <div id="ozLoadMore" style="display:none" class="load-more-row"><button class="btn-sm" onclick="loadMore('oz')">Загрузить ещё</button></div>
+  </div>
+
+  <!-- ЖАЛОБА -->
+  <div class="complaint-card">
+    <div class="complaint-head">
+      <span class="complaint-title">⚠️ Заявка в службу поддержки WB</span>
+      <button class="copy-btn" onclick="copyComplaint()">Скопировать текст</button>
+    </div>
+    <div class="complaint-body">
+      <div class="complaint-box" id="complaintText">После обновления данных здесь появится готовый текст заявки.</div>
+    </div>
+  </div>
+
+  <!-- ИСТОРИЯ -->
+  <div class="history-card">
+    <div class="history-head">
+      <span class="history-title">История сканирований</span>
+      <button class="btn-sm" onclick="clearHistory()">Очистить</button>
+    </div>
+    <table class="hist-table">
+      <thead><tr>
+        <th>Дата</th><th>Запрос</th>
+        <th>WB всего</th><th>WB наших</th>
+        <th>Ozon всего</th><th>Ozon наших</th>
+        <th>Клоны</th>
+      </tr></thead>
+      <tbody id="historyBody">
+        <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:16px">Пока нет данных</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// Наши бренды — точное совпадение (без учёта регистра)
+// ══════════════════════════════════════════════════════
+const OUR_BRANDS = ['easyform', 'easy form', 'ezfr', 'vaivai', 'vai vai'];
+
+const state = {
+  wb: { products:[], total:0, page:1, filter:'all', enabled:true },
+  oz: { products:[], total:0, page:1, filter:'all', enabled:true },
+  history: [],
+};
+
+try { const s = localStorage.getItem('ef_hist'); if(s) state.history = JSON.parse(s); } catch(e){}
+renderHistory();
+
+function getMin() { return parseInt(document.getElementById('minReviews').value) || 6; }
+
+// Бренд совпадает с нашим?
+function isBrandOurs(p) {
+  const b = (p.brand||'').toLowerCase().trim();
+  const s = (p.supplier||'').toLowerCase().trim();
+  return OUR_BRANDS.some(x => b === x || b.includes(x) || s === x || s.includes(x));
+}
+
+// Название/бренд упоминает easyform (для клонов)?
+function mentionsEasyForm(p) {
+  const b = (p.brand||'').toLowerCase();
+  const n = (p.name||'').toLowerCase();
+  return b.includes('easyform') || b.includes('easy form') || b.includes('ezfr') ||
+         n.includes('easyform') || n.includes('easy form');
+}
+
+function classify(p) {
+  const reviews = p.reviews || 0;
+  const min     = getMin();
+  // НАШ: бренд наш И отзывов достаточно
+  if (isBrandOurs(p) && reviews >= min) return 'our';
+  // КЛОН: упоминает EasyForm в бренде/названии, но отзывов мало (или бренд не наш)
+  if (mentionsEasyForm(p) && (!isBrandOurs(p) || reviews < min)) return 'clone';
+  return 'other';
+}
+
+function fmt(n)  { return n != null ? (+n).toLocaleString('ru') : '—'; }
+function esc(s)  { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function starsHtml(r){ const n=Math.round(+r||0); return '★'.repeat(Math.min(5,n))+'☆'.repeat(Math.max(0,5-n)); }
+
+function togglePlatform(pl) {
+  state[pl].enabled = !state[pl].enabled;
+  document.getElementById(pl==='wb'?'togWB':'togOzon').classList.toggle('active');
+}
+function setFilter(pl, f, el) {
+  state[pl].filter = f;
+  el.parentElement.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable(pl);
+}
+
+// ── Scan ──────────────────────────────────────
+async function runScan() {
+  const btn   = document.getElementById('refreshBtn');
+  const proxy = document.getElementById('proxyUrl').value.trim().replace(/\/+$/,'');
+  const query = document.getElementById('searchQuery').value.trim();
+  btn.disabled = true; btn.textContent = 'Загрузка...';
+
+  await Promise.allSettled([
+    state.wb.enabled ? fetchPlatform('wb',  proxy, query, 1) : Promise.resolve(),
+    state.oz.enabled ? fetchPlatform('oz',  proxy, query, 1) : Promise.resolve(),
+  ]);
+
+  const all = [...state.wb.products, ...state.oz.products];
+  const e = {
+    date:    new Date().toLocaleString('ru'), query,
+    wbTotal: state.wb.total,
+    wbOur:   state.wb.products.filter(p=>classify(p)==='our').length,
+    ozTotal: state.oz.total,
+    ozOur:   state.oz.products.filter(p=>classify(p)==='our').length,
+    clones:  all.filter(p=>classify(p)==='clone').length,
+  };
+  state.history.unshift(e);
+  if (state.history.length > 30) state.history.length = 30;
+  try { localStorage.setItem('ef_hist', JSON.stringify(state.history)); } catch(x){}
+
+  renderHistory();
+  updateStats();
+  updateComplaint();
+  document.getElementById('lastUpdateLabel').textContent = 'Обновлено: ' + new Date().toLocaleTimeString('ru');
+  btn.disabled = false; btn.textContent = 'Обновить данные';
+  showToast('Данные обновлены');
+}
+
+async function fetchPlatform(pl, proxy, query, page) {
+  const isWB = pl==='wb';
+  const elId = isWB?'wbTable':'ozTable';
+  document.getElementById(elId).innerHTML =
+    `<div class="state-box"><div class="spinner"></div><div class="state-title">Загрузка ${isWB?'Wildberries':'Ozon'}...</div></div>`;
+  try {
+    const resp = await fetch(`${proxy}/${isWB?'wb':'ozon'}?q=${encodeURIComponent(query)}&page=${page}`);
+    const data = await resp.json();
+    if (data.error && !data.products?.length) throw new Error(data.error);
+    if (page===1) state[pl].products = data.products||[];
+    else          state[pl].products = [...state[pl].products, ...(data.products||[])];
+    state[pl].total = data.total || state[pl].products.length;
+    state[pl].page  = page;
+    renderTable(pl);
+    document.getElementById(isWB?'wbLoadMore':'ozLoadMore').style.display =
+      state[pl].products.length < state[pl].total ? 'block' : 'none';
+  } catch(e) {
+    document.getElementById(elId).innerHTML = `
+      <div class="state-box">
+        <div class="state-icon">❌</div>
+        <div class="state-title">Ошибка загрузки ${isWB?'WB':'Ozon'}</div>
+        <div class="state-sub">${isWB?'Проверьте воркер':'Ozon блокирует запросы с Cloudflare IP — это известная проблема, решение в разработке'}</div>
+        <div class="err-box">${esc(String(e))}</div>
+      </div>`;
+  }
+}
+
+function loadMore(pl) {
+  const proxy = document.getElementById('proxyUrl').value.trim().replace(/\/+$/,'');
+  const query = document.getElementById('searchQuery').value.trim();
+  fetchPlatform(pl, proxy, query, (state[pl].page||1)+1);
+}
+
+function renderTable(pl) {
+  const isWB = pl==='wb', data = state[pl];
+  const elId = isWB?'wbTable':'ozTable', pgId = isWB?'wbPageInfo':'ozPageInfo';
+
+  const list = data.products.filter(p => {
+    const c = classify(p);
+    return data.filter==='all'?true: data.filter==='our'?c==='our': data.filter==='clone'?c==='clone': c==='other';
+  });
+  document.getElementById(pgId).textContent = `${list.length} из ${fmt(data.total)} артикулов`;
+
+  if (!list.length) {
+    document.getElementById(elId).innerHTML =
+      `<div class="state-box"><div class="state-icon">🤷</div><div class="state-title">Ничего не найдено</div><div class="state-sub">Смените фильтр или порог отзывов</div></div>`;
+    return;
+  }
+
+  const rows = list.map(p => {
+    const cls  = classify(p);
+    const rank = data.products.indexOf(p)+1;
+    const rev  = p.reviews||0;
+    const disc = p.oldPrice&&p.price&&p.oldPrice>p.price ? Math.round((1-p.price/p.oldPrice)*100) : 0;
+    const tagHtml = cls==='our'
+      ? `<span class="tag tag-our">✅ Наш</span>`
+      : cls==='clone'
+      ? `<span class="tag tag-clone">⚠️ Клон</span>`
+      : `<span class="tag tag-other">—</span>`;
+    const revCls = rev===0?'rev-zero': rev>=getMin()?'rev-high':'rev-low';
+    return `<tr onclick="window.open('${esc(p.url)}','_blank')">
+      <td><span class="pos-num ${rank<=10?'pos-top':''}">${rank}</span></td>
+      <td>${tagHtml}</td>
+      <td style="font-weight:600;font-size:11px;white-space:nowrap">${esc(p.brand||'—')}</td>
+      <td class="name-col" title="${esc(p.name)}">${esc(p.name||'—')}</td>
+      <td><span class="price-main">${fmt(p.price)} ₽</span>${disc?`<span class="disc">−${disc}%</span>`:''} ${p.oldPrice&&p.oldPrice!==p.price?`<br><span class="price-old">${fmt(p.oldPrice)} ₽</span>`:''}</td>
+      <td><span class="stars">${starsHtml(p.rating)}</span> ${p.rating?(+p.rating).toFixed(1):'—'}</td>
+      <td class="${revCls}">${fmt(rev)}</td>
+      <td><a class="tbl-link" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById(elId).innerHTML = `<div class="tbl-scroll"><table>
+    <thead><tr><th>№</th><th>Статус</th><th>Бренд</th><th>Название</th><th>Цена</th><th>Рейтинг</th><th>Отзывы</th><th>Ссылка</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
+function updateStats() {
+  const wbOur  = state.wb.products.filter(p=>classify(p)==='our').length;
+  const ozOur  = state.oz.products.filter(p=>classify(p)==='our').length;
+  const clones = [...state.wb.products,...state.oz.products].filter(p=>classify(p)==='clone').length;
+  const ourIdx = state.wb.products.findIndex(p=>classify(p)==='our');
+  document.getElementById('wbTotal').textContent    = fmt(state.wb.total)||'—';
+  document.getElementById('wbOurCount').textContent = `наших: ${wbOur}`;
+  document.getElementById('ozTotal').textContent    = fmt(state.oz.total)||'—';
+  document.getElementById('ozOurCount').textContent = `наших: ${ozOur}`;
+  document.getElementById('cloneCount').textContent = clones;
+  document.getElementById('topPos').textContent     = ourIdx>=0?`#${ourIdx+1}`:'—';
+  document.getElementById('topPosName').textContent = ourIdx>=0
+    ? (state.wb.products[ourIdx].name||'').slice(0,32)+'…' : 'нет в топе';
+}
+
+// ── Жалоба ─────────────────────────────────────
+function updateComplaint() {
+  const clones = [...state.wb.products, ...state.oz.products].filter(p=>classify(p)==='clone');
+  const el = document.getElementById('complaintText');
+
+  if (!clones.length) {
+    el.textContent = 'Подозрительных клонов не обнаружено. Всё чисто ✅';
+    return;
+  }
+
+  const date = new Date().toLocaleDateString('ru', {day:'2-digit', month:'2-digit', year:'numeric'});
+  const list = clones.map((p,i) => `${i+1}. Артикул: ${p.id} | ${p.url}`).join('\n');
+
+  el.textContent =
+`Уважаемая служба поддержки Wildberries,
+
+Мы являемся правообладателем товарного знака «EasyForm». В ходе мониторинга поисковой выдачи по запросу «easyform» от ${date} выявлены товары, незаконно использующие наш товарный знак.
+
+Просим принять меры и удалить следующие нарушающие карточки:
+
+${list}
+
+Прилагаем: Свидетельство о регистрации товарного знака «EasyForm».
+
+С уважением, команда EasyForm`;
+}
+
+function copyComplaint() {
+  const text = document.getElementById('complaintText').textContent;
+  navigator.clipboard.writeText(text)
+    .then(()=>showToast('Текст скопирован!'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');
+      ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('Текст скопирован!');
+    });
+}
+
+function renderHistory() {
+  const tb = document.getElementById('historyBody');
+  if (!state.history.length) {
+    tb.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">Пока нет данных</td></tr>`;
+    return;
+  }
+  tb.innerHTML = state.history.map(h=>`
+    <tr>
+      <td style="color:var(--muted);white-space:nowrap">${h.date}</td>
+      <td><strong>${esc(h.query)}</strong></td>
+      <td class="c-wb">${fmt(h.wbTotal)}</td><td class="c-green">${h.wbOur}</td>
+      <td class="c-ozon">${fmt(h.ozTotal)}</td><td class="c-green">${h.ozOur}</td>
+      <td class="c-red">${h.clones}</td>
+    </tr>`).join('');
+}
+function clearHistory() {
+  state.history=[]; try{localStorage.removeItem('ef_hist');}catch(e){}
+  renderHistory(); showToast('История очищена');
+}
+
+let _tt;
+function showToast(msg) {
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
