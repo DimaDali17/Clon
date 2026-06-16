@@ -11,15 +11,16 @@
     --text:#1A1A18; --muted:#8A857C;
     --green:#2E6B4F; --green-bg:#EBF4EF; --green-border:#B8D9C8;
     --red:#B84040; --red-bg:#FAEDED; --red-border:#E8BEBE;
-    --yellow:#C07D2A;
+    --yellow:#C07D2A; --blue:#1D5EBF; --blue-bg:#EEF3FC;
     --wb:#CB11AB; --wb-bg:rgba(203,17,171,.07);
     --ozon:#005BFF; --ozon-bg:rgba(0,91,255,.07);
     --r:14px; --rs:8px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5}
-  .w{max-width:1200px;margin:0 auto;padding:20px 24px}
+  .w{max-width:1300px;margin:0 auto;padding:20px 24px}
 
+  /* HEADER */
   .hcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px}
   .logo{display:flex;align-items:center;gap:14px}
   .logo-i{width:44px;height:44px;border-radius:10px;background:var(--text);display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;flex-shrink:0}
@@ -28,107 +29,118 @@
   .hr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .pill{display:flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-border);color:var(--green);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500}
   .dot{width:6px;height:6px;background:var(--green);border-radius:50%}
-  .upd{font-size:11px;color:var(--muted)}
   .btn{background:var(--text);color:#fff;border:none;border-radius:var(--rs);padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s}
   .btn:hover{opacity:.85} .btn:disabled{opacity:.4;cursor:not-allowed}
 
-  .scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+  /* SETTINGS */
+  .scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:12px}
   .fg{display:flex;flex-direction:column;gap:4px}
   .fl{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-  .fi{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:7px 11px;font-size:12px;font-family:inherit;transition:border-color .15s}
+  .fi{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:var(--rs);padding:6px 10px;font-size:12px;font-family:inherit}
   .fi:focus{outline:none;border-color:var(--border-dark)}
-  #proxyUrl{width:240px} #searchQuery{width:100px} #minReviews{width:65px}
-  .tg{display:flex;gap:5px}
-  .tb{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:600;font-family:inherit;transition:all .15s}
-  .tb.wb.on{background:var(--wb);border-color:var(--wb);color:#fff}
-  .tb.oz.on{background:var(--ozon);border-color:var(--ozon);color:#fff}
+  #proxyUrl{width:230px} #searchQuery{width:180px} #minReviews{width:60px}
 
-  /* Поле кук Ozon */
-  .cookie-card{background:var(--ozon-bg);border:1px solid rgba(0,91,255,.2);border-radius:var(--r);padding:14px 20px;margin-bottom:12px}
-  .cookie-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
-  .cookie-title{font-size:12px;font-weight:600;color:var(--ozon)}
-  .cookie-hint{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.6}
-  .cookie-row{display:flex;gap:8px;align-items:stretch}
-  .cookie-input{flex:1;background:var(--card);border:1px solid rgba(0,91,255,.3);color:var(--text);border-radius:var(--rs);padding:8px 12px;font-size:11px;font-family:monospace;min-height:38px}
-  .cookie-input:focus{outline:none;border-color:var(--ozon)}
-  .cookie-btn{background:var(--ozon);color:#fff;border:none;border-radius:var(--rs);padding:8px 14px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
-  .cookie-btn:hover{opacity:.85}
-  .cookie-status{font-size:10px;margin-top:6px}
-  .cs-ok{color:var(--green)} .cs-no{color:var(--red)} .cs-empty{color:var(--muted)}
-  details summary{cursor:pointer;font-size:11px;color:var(--ozon);font-weight:600;margin-top:8px;user-select:none}
-  details summary:hover{opacity:.8}
-  .how-to{background:var(--card);border-radius:var(--rs);padding:12px 14px;margin-top:8px;font-size:11px;line-height:1.9;color:var(--text)}
-  .how-to code{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:10px}
-  .how-to b{font-weight:600}
+  /* KPI GRID */
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px}
+  .kpi-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+  .kpi-v{font-size:22px;font-weight:700;line-height:1;letter-spacing:-1px}
+  .kpi-s{font-size:10px;color:var(--muted);margin-top:3px}
+  .cwb{color:var(--wb)} .cgr{color:var(--green)} .crd{color:var(--red)} .cbl{color:var(--blue)} .cyl{color:var(--yellow)}
 
-  .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
-  .sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
-  .sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
-  .sv{font-size:26px;font-weight:700;line-height:1;letter-spacing:-1px}
-  .ss{font-size:10px;color:var(--muted);margin-top:3px}
-  .cwb{color:var(--wb)} .coz{color:var(--ozon)} .cgr{color:var(--green)} .crd{color:var(--red)}
+  /* ANALYTICS */
+  .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .acard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px}
+  .acard-title{font-size:12px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .acard-title span{font-size:10px;color:var(--muted);font-weight:400}
 
+  /* Bar chart */
+  .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .bar-label{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:130px;flex-shrink:0}
+  .bar-track{flex:1;height:18px;background:var(--bg);border-radius:4px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:4px;transition:width .4s}
+  .bar-val{font-size:11px;color:var(--muted);white-space:nowrap;width:50px;text-align:right;flex-shrink:0}
+
+  /* Price buckets */
+  .price-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)}
+  .price-row:last-child{border-bottom:none}
+  .price-badge{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:600}
+
+  /* Segment table */
+  .seg-table{width:100%;border-collapse:collapse;font-size:11px}
+  .seg-table th{text-align:left;padding:5px 8px;font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+  .seg-table td{padding:5px 8px;border-bottom:1px solid var(--border)}
+  .seg-table tr:last-child td{border-bottom:none}
+
+  /* MAIN TABLE */
   .sec{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
   .sh{padding:14px 20px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .pb{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.5px}
-  .pwb{background:var(--wb-bg);color:var(--wb)} .poz{background:var(--ozon-bg);color:var(--ozon)}
-  .st{font-size:13px;font-weight:600}
-  .sc2{font-size:11px;color:var(--muted);margin-left:auto}
+  .pb{padding:3px 10px;border-radius:5px;font-size:10px;font-weight:700}
+  .pwb{background:var(--wb-bg);color:var(--wb)}
+  .st{font-size:13px;font-weight:600} .sc2{font-size:11px;color:var(--muted);margin-left:auto}
   .fr{display:flex;gap:5px;padding:10px 20px;flex-wrap:wrap}
-  .ft{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-family:inherit;transition:all .15s}
+  .ft{padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-family:inherit}
   .ft.on{background:var(--text);color:#fff;border-color:var(--text)}
 
   .ts{overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:12px}
-  thead th{text-align:left;padding:8px 14px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;background:var(--bg)}
+  thead th{text-align:left;padding:7px 12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;background:var(--bg);cursor:pointer}
+  thead th:hover{color:var(--text)}
   tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
-  tbody tr:last-child{border-bottom:none}
-  tbody tr:hover{background:var(--bg)}
-  tbody td{padding:8px 14px;vertical-align:middle}
-  .tag{display:inline-block;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:600;white-space:nowrap}
+  tbody tr:last-child{border-bottom:none} tbody tr:hover{background:var(--bg)}
+  tbody td{padding:7px 12px;vertical-align:middle}
+  .tag{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:600;white-space:nowrap}
   .tour{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
   .tcl{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
   .toth{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
-  .pn{display:inline-block;width:26px;text-align:center;padding:2px 0;border-radius:5px;font-size:11px;font-weight:700;background:var(--bg);color:var(--muted)}
+  .pn{display:inline-block;width:24px;text-align:center;padding:2px 0;border-radius:4px;font-size:11px;font-weight:700;background:var(--bg);color:var(--muted)}
   .ptop{background:var(--green-bg);color:var(--green)}
-  .nc{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pm{font-weight:600} .po{font-size:10px;color:var(--muted);text-decoration:line-through} .pd{font-size:10px;color:var(--red);margin-left:4px}
+  .nc{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pm{font-weight:600} .po{font-size:10px;color:var(--muted);text-decoration:line-through} .pd{font-size:10px;color:var(--red);margin-left:3px}
   .stars{color:var(--yellow);letter-spacing:-1px;font-size:11px}
   .rh{color:var(--green);font-weight:600} .rl{color:var(--muted)} .rz{color:var(--red)}
-  .tl{color:var(--muted);text-decoration:none;font-size:11px}
-  .tl:hover{color:var(--text);text-decoration:underline}
+  .stk-hi{color:var(--green);font-weight:600} .stk-lo{color:var(--yellow)} .stk-no{color:var(--red)}
+  .tl{color:var(--muted);text-decoration:none;font-size:11px} .tl:hover{color:var(--text)}
   .lm{padding:12px 20px;text-align:center;border-top:1px solid var(--border)}
-  .bsm{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:6px 16px;font-size:12px;cursor:pointer;font-family:inherit}
+  .bsm{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:5px 14px;font-size:12px;cursor:pointer;font-family:inherit}
   .bsm:hover{border-color:var(--border-dark);color:var(--text)}
 
-  .sb{text-align:center;padding:36px 20px;color:var(--muted)}
-  .si{font-size:28px;margin-bottom:8px}
-  .stit{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
-  .ssub{font-size:11px;line-height:1.7}
+  /* OZON */
+  .ozon-banner{background:var(--ozon-bg);border:1px solid rgba(0,91,255,.2);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .ozon-left{display:flex;align-items:center;gap:12px}
+  .ozon-logo{background:var(--ozon);color:#fff;border-radius:7px;padding:5px 10px;font-size:12px;font-weight:800;flex-shrink:0}
+  .ozon-text{font-size:12px;line-height:1.5} .ozon-text span{color:var(--muted);font-size:11px}
+  .ozon-btn{background:var(--ozon);color:#fff;border:none;border-radius:var(--rs);padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;white-space:nowrap}
+  .ozon-btn:hover{opacity:.85}
+
+  /* COMPLAINT */
+  .cc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+  .ch{padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .ct{font-size:13px;font-weight:600} .cb{padding:14px 20px}
+  .cx{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;font-size:12px;line-height:1.9;color:var(--text);white-space:pre-wrap;font-family:inherit}
+  .cp{background:var(--text);color:#fff;border:none;border-radius:var(--rs);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit} .cp:hover{opacity:.85}
+
+  /* STATE */
+  .sb{text-align:center;padding:32px 20px;color:var(--muted)}
+  .si{font-size:28px;margin-bottom:8px} .stit{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px} .ssub{font-size:11px}
   .spin{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 10px}
   @keyframes sp{to{transform:rotate(360deg)}}
-  .eb{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--rs);padding:8px 12px;margin-top:8px;font-size:10px;color:var(--red);font-family:monospace;max-width:500px;margin-left:auto;margin-right:auto;text-align:left;word-break:break-all}
+  .eb{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--rs);padding:7px 10px;margin-top:8px;font-size:10px;color:var(--red);font-family:monospace;max-width:480px;margin-left:auto;margin-right:auto;text-align:left;word-break:break-all}
 
-  .cc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
-  .ch{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-  .ct{font-size:13px;font-weight:600}
-  .cb{padding:16px 20px}
-  .cx{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;font-size:12px;line-height:1.9;color:var(--text);white-space:pre-wrap;font-family:inherit;min-height:60px}
-  .cp{background:var(--text);color:#fff;border:none;border-radius:var(--rs);padding:8px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
-  .cp:hover{opacity:.85}
-
+  /* HISTORY */
   .hc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-  .hh{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .hh{padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
   .ht2{font-size:13px;font-weight:600}
   .htbl{width:100%;border-collapse:collapse;font-size:11px}
-  .htbl th{text-align:left;padding:7px 14px;font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--bg)}
-  .htbl td{padding:7px 14px;border-bottom:1px solid var(--border)}
-  .htbl tr:last-child td{border-bottom:none}
-  .htbl tr:hover td{background:var(--bg)}
+  .htbl th{text-align:left;padding:6px 14px;font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);background:var(--bg)}
+  .htbl td{padding:6px 14px;border-bottom:1px solid var(--border)}
+  .htbl tr:last-child td{border-bottom:none} .htbl tr:hover td{background:var(--bg)}
 
-  #toast{position:fixed;bottom:18px;right:18px;background:var(--text);color:#fff;padding:9px 16px;border-radius:var(--rs);font-size:12px;font-weight:500;transform:translateY(50px);opacity:0;transition:all .2s;z-index:999}
+  #toast{position:fixed;bottom:18px;right:18px;background:var(--text);color:#fff;padding:8px 14px;border-radius:var(--rs);font-size:12px;font-weight:500;transform:translateY(50px);opacity:0;transition:all .2s;z-index:999}
   #toast.show{transform:translateY(0);opacity:1}
-  @media(max-width:768px){.sg{grid-template-columns:repeat(2,1fr)}#proxyUrl{width:180px}.w{padding:12px}}
+
+  @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.analytics-grid{grid-template-columns:1fr}}
+  @media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.w{padding:12px}#proxyUrl{width:160px}}
 </style>
 </head>
 <body>
@@ -138,11 +150,11 @@
   <div class="hcard">
     <div class="logo">
       <div class="logo-i">EF</div>
-      <div><div class="logo-t">EasyForm</div><div class="logo-s">Мониторинг поиска · WB + Ozon</div></div>
+      <div><div class="logo-t">EasyForm</div><div class="logo-s">Аналитика поиска WB</div></div>
     </div>
     <div class="hr">
-      <div class="pill"><span class="dot"></span>WB через Worker · Ozon с куками</div>
-      <span class="upd" id="upd">Ещё не обновлялось</span>
+      <div class="pill"><span class="dot"></span>Данные через Cloudflare Worker</div>
+      <span style="font-size:11px;color:var(--muted)" id="upd">Ещё не обновлялось</span>
       <button class="btn" id="refreshBtn" onclick="runScan()">Обновить данные</button>
     </div>
   </div>
@@ -150,53 +162,49 @@
   <!-- SETTINGS -->
   <div class="scard">
     <div class="fg"><div class="fl">URL воркера</div><input class="fi" type="text" id="proxyUrl" value="https://clon.ooo6311ooo.workers.dev"></div>
-    <div class="fg"><div class="fl">Запрос</div><input class="fi" type="text" id="searchQuery" value="easyform"></div>
+    <div class="fg"><div class="fl">Поисковый запрос</div><input class="fi" type="text" id="searchQuery" value="easyform" placeholder="easyform / панталоны от натирания"></div>
     <div class="fg"><div class="fl">Мин. отзывов → Наш</div><input class="fi" type="number" id="minReviews" value="6"></div>
-    <div class="fg">
-      <div class="fl">Площадки</div>
-      <div class="tg">
-        <button class="tb wb on" id="togWB"   onclick="togglePl('wb')">WB</button>
-        <button class="tb oz on" id="togOzon" onclick="togglePl('oz')">Ozon</button>
-      </div>
-    </div>
   </div>
 
-  <!-- OZON COOKIE -->
-  <div class="cookie-card">
-    <div class="cookie-head">
-      <div>
-        <div class="cookie-title">🍪 Куки Ozon</div>
-        <div class="cookie-hint">Вставьте строку кук из браузера — Ozon разблокируется. Действуют ~7 дней.</div>
-      </div>
-    </div>
-    <div class="cookie-row">
-      <input class="cookie-input" type="text" id="ozonCookie" placeholder="Вставьте куки: __Secure-access-token=...; xcid=...; abt_data=...">
-      <button class="cookie-btn" onclick="saveCookie()">Сохранить</button>
-    </div>
-    <div class="cookie-status cs-empty" id="cookieStatus">Куки не заданы</div>
-
-    <details>
-      <summary>Как получить куки Ozon? (30 секунд)</summary>
-      <div class="how-to">
-        <b>1.</b> Откройте <a href="https://www.ozon.ru" target="_blank" style="color:var(--ozon)">ozon.ru</a> в браузере и войдите в аккаунт<br>
-        <b>2.</b> Нажмите <code>F12</code> → вкладка <b>Application</b> (или «Приложение»)<br>
-        <b>3.</b> Слева: <b>Storage → Cookies → https://www.ozon.ru</b><br>
-        <b>4.</b> Найдите куку <code>__Secure-access-token</code> — скопируйте её значение<br>
-        <b>5.</b> Или: вкладка <b>Network</b> → обновите страницу → любой запрос → вкладка <b>Headers</b> → найдите строку <code>cookie:</code> → скопируйте всё после неё<br>
-        <b>6.</b> Вставьте в поле выше и нажмите «Сохранить»
-      </div>
-    </details>
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-l">Всего артикулов</div><div class="kpi-v cwb" id="kTotal">—</div><div class="kpi-s" id="kBrands">брендов: —</div></div>
+    <div class="kpi"><div class="kpi-l">Наших карточек</div><div class="kpi-v cgr" id="kOur">—</div><div class="kpi-s" id="kOurPos">лучшая позиция: —</div></div>
+    <div class="kpi"><div class="kpi-l">Клонов / подозр.</div><div class="kpi-v crd" id="kClones">—</div><div class="kpi-s">чужой бренд + мало отзывов</div></div>
+    <div class="kpi"><div class="kpi-l">Медиана цены топ-50</div><div class="kpi-v cyl" id="kMedian">—</div><div class="kpi-s" id="kPriceRange">мин — макс: —</div></div>
+    <div class="kpi"><div class="kpi-l">Сред. отзывов топ-50</div><div class="kpi-v cbl" id="kAvgRev">—</div><div class="kpi-s" id="kAvgRating">рейтинг: —</div></div>
   </div>
 
-  <!-- STATS -->
-  <div class="sg">
-    <div class="sc"><div class="sl">WB — найдено</div><div class="sv cwb" id="wbTotal">—</div><div class="ss" id="wbOur">наших: —</div></div>
-    <div class="sc"><div class="sl">Ozon — найдено</div><div class="sv coz" id="ozTotal">—</div><div class="ss" id="ozOur">наших: —</div></div>
-    <div class="sc"><div class="sl">Клонов выявлено</div><div class="sv crd" id="clones">—</div><div class="ss">чужой бренд + мало отзывов</div></div>
-    <div class="sc"><div class="sl">Лучшая позиция WB</div><div class="sv cgr" id="topPos">—</div><div class="ss" id="topName">—</div></div>
+  <!-- АНАЛИТИКА -->
+  <div class="analytics-grid" id="analyticsBlock" style="display:none">
+
+    <!-- Топ брендов -->
+    <div class="acard">
+      <div class="acard-title">🏆 Топ брендов по отзывам <span>топ-50 позиций</span></div>
+      <div id="brandBars"></div>
+    </div>
+
+    <!-- Ценовые сегменты -->
+    <div class="acard">
+      <div class="acard-title">💰 Ценовые сегменты <span>распределение топ-50</span></div>
+      <div id="priceSegments"></div>
+    </div>
+
+    <!-- Позиции EasyForm -->
+    <div class="acard">
+      <div class="acard-title">📍 Наши позиции в поиске</div>
+      <div id="ourPositions"></div>
+    </div>
+
+    <!-- Конкуренты рядом -->
+    <div class="acard">
+      <div class="acard-title">👀 Кто рядом с нами <span>±5 позиций</span></div>
+      <div id="nearbyCompetitors"></div>
+    </div>
+
   </div>
 
-  <!-- WB -->
+  <!-- WB TABLE -->
   <div class="sec">
     <div class="sh">
       <span class="pb pwb">WILDBERRIES</span>
@@ -204,35 +212,27 @@
       <span class="sc2" id="wbPg"></span>
     </div>
     <div class="fr">
-      <button class="ft on" onclick="setF('wb','all',this)">Все</button>
-      <button class="ft"    onclick="setF('wb','our',this)">✅ Наши</button>
-      <button class="ft"    onclick="setF('wb','clone',this)">⚠️ Клоны</button>
-      <button class="ft"    onclick="setF('wb','other',this)">Остальные</button>
+      <button class="ft on" onclick="setF('all',this)">Все</button>
+      <button class="ft"    onclick="setF('our',this)">✅ Наши</button>
+      <button class="ft"    onclick="setF('clone',this)">⚠️ Клоны</button>
+      <button class="ft"    onclick="setF('other',this)">Остальные</button>
     </div>
-    <div id="wbT"><div class="sb"><div class="si">🔍</div><div class="stit">Нажмите «Обновить данные»</div></div></div>
-    <div id="wbLM" style="display:none" class="lm"><button class="bsm" onclick="more('wb')">Загрузить ещё</button></div>
+    <div id="wbT"><div class="sb"><div class="si">🔍</div><div class="stit">Нажмите «Обновить данные»</div><div class="ssub">Попробуйте запрос «easyform» или «панталоны от натирания»</div></div></div>
+    <div id="wbLM" style="display:none" class="lm"><button class="bsm" onclick="more()">Загрузить ещё</button></div>
   </div>
 
   <!-- OZON -->
-  <div class="sec">
-    <div class="sh">
-      <span class="pb poz">OZON</span>
-      <span class="st">Результаты поиска</span>
-      <span class="sc2" id="ozPg"></span>
+  <div class="ozon-banner">
+    <div class="ozon-left">
+      <div class="ozon-logo">OZON</div>
+      <div class="ozon-text"><b>Поиск на Ozon</b><br><span>Автопарсинг недоступен — Ozon блокирует зарубежные IP. Открыть вручную:</span></div>
     </div>
-    <div class="fr">
-      <button class="ft on" onclick="setF('oz','all',this)">Все</button>
-      <button class="ft"    onclick="setF('oz','our',this)">✅ Наши</button>
-      <button class="ft"    onclick="setF('oz','clone',this)">⚠️ Клоны</button>
-      <button class="ft"    onclick="setF('oz','other',this)">Остальные</button>
-    </div>
-    <div id="ozT"><div class="sb"><div class="si">🍪</div><div class="stit">Вставьте куки Ozon выше</div><div class="ssub">и нажмите «Обновить данные»</div></div></div>
-    <div id="ozLM" style="display:none" class="lm"><button class="bsm" onclick="more('oz')">Загрузить ещё</button></div>
+    <a class="ozon-btn" id="ozonLink" href="https://www.ozon.ru/search/?text=easyform" target="_blank">Открыть на Ozon →</a>
   </div>
 
   <!-- ЖАЛОБА -->
   <div class="cc">
-    <div class="ch"><span class="ct">⚠️ Заявка в службу поддержки WB</span><button class="cp" onclick="copyC()">Скопировать текст</button></div>
+    <div class="ch"><span class="ct">⚠️ Заявка в службу поддержки WB</span><button class="cp" onclick="copyC()">Скопировать</button></div>
     <div class="cb"><div class="cx" id="ctext">После обновления данных здесь появится готовый текст заявки.</div></div>
   </div>
 
@@ -240,8 +240,8 @@
   <div class="hc">
     <div class="hh"><span class="ht2">История сканирований</span><button class="bsm" onclick="clearH()">Очистить</button></div>
     <table class="htbl">
-      <thead><tr><th>Дата</th><th>Запрос</th><th>WB всего</th><th>WB наших</th><th>Ozon всего</th><th>Ozon наших</th><th>Клоны</th></tr></thead>
-      <tbody id="hbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:16px">Пока нет данных</td></tr></tbody>
+      <thead><tr><th>Дата</th><th>Запрос</th><th>Всего</th><th>Наших</th><th>Клоны</th><th>Мед. цена</th><th>Брендов</th></tr></thead>
+      <tbody id="hbody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">Пока нет данных</td></tr></tbody>
     </table>
   </div>
 
@@ -250,243 +250,226 @@
 
 <script>
 const OUR_BRANDS = ['easyform','easy form','ezfr','vaivai','vai vai'];
+const S = { products:[], total:0, page:1, filter:'all', hist:[] };
 
-const S = {
-  wb: { products:[], total:0, page:1, filter:'all', on:true },
-  oz: { products:[], total:0, page:1, filter:'all', on:true },
-  hist: []
-};
-
-// Загружаем сохранённые данные
-try { const s=localStorage.getItem('ef_h'); if(s) S.hist=JSON.parse(s); } catch(e){}
-try {
-  const c=localStorage.getItem('oz_cookie');
-  if(c) {
-    document.getElementById('ozonCookie').value=c;
-    updCookieStatus(c);
-  }
-} catch(e){}
+try { const s=localStorage.getItem('ef_h2'); if(s) S.hist=JSON.parse(s); } catch(e){}
 renderH();
 
 function getMin(){ return parseInt(document.getElementById('minReviews').value)||6; }
-
-function isBrandOurs(p){
-  const b=(p.brand||'').toLowerCase().trim(), s=(p.supplier||'').toLowerCase().trim();
-  return OUR_BRANDS.some(x=>b===x||b.includes(x)||s===x||s.includes(x));
-}
-function mentionsEF(p){
-  const b=(p.brand||'').toLowerCase(), n=(p.name||'').toLowerCase();
-  return b.includes('easyform')||b.includes('easy form')||b.includes('ezfr')||
-         n.includes('easyform')||n.includes('easy form');
-}
-function classify(p){
-  if(isBrandOurs(p)&&(p.reviews||0)>=getMin()) return 'our';
-  if(mentionsEF(p)&&(!isBrandOurs(p)||(p.reviews||0)<getMin())) return 'clone';
-  return 'other';
-}
-
+function isBrandOurs(p){ const b=(p.brand||'').toLowerCase().trim(),s=(p.supplier||'').toLowerCase().trim(); return OUR_BRANDS.some(x=>b===x||b.includes(x)||s===x||s.includes(x)); }
+function mentionsEF(p){ const b=(p.brand||'').toLowerCase(),n=(p.name||'').toLowerCase(); return b.includes('easyform')||b.includes('easy form')||b.includes('ezfr')||n.includes('easyform')||n.includes('easy form'); }
+function classify(p){ if(isBrandOurs(p)&&(p.reviews||0)>=getMin()) return 'our'; if(mentionsEF(p)&&(!isBrandOurs(p)||(p.reviews||0)<getMin())) return 'clone'; return 'other'; }
 function fmt(n){ return n!=null?(+n).toLocaleString('ru'):'—'; }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function stars(r){ const n=Math.round(+r||0); return '★'.repeat(Math.min(5,n))+'☆'.repeat(Math.max(0,5-n)); }
+function starsH(r){ const n=Math.round(+r||0); return '★'.repeat(Math.min(5,n))+'☆'.repeat(Math.max(0,5-n)); }
+function median(arr){ if(!arr.length) return 0; const s=[...arr].sort((a,b)=>a-b); const m=Math.floor(s.length/2); return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2); }
+function mean(arr){ return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0; }
 
-// ── Cookie управление ─────────────────────────────────────
-function saveCookie(){
-  const val=document.getElementById('ozonCookie').value.trim();
-  try{ localStorage.setItem('oz_cookie', val); }catch(e){}
-  updCookieStatus(val);
-  toast(val ? '🍪 Куки сохранены' : 'Куки очищены');
-}
+document.getElementById('searchQuery').addEventListener('input', function(){
+  document.getElementById('ozonLink').href=`https://www.ozon.ru/search/?text=${encodeURIComponent(this.value)}`;
+});
 
-function updCookieStatus(val){
-  const el=document.getElementById('cookieStatus');
-  if(!val){ el.textContent='Куки не заданы — Ozon работать не будет'; el.className='cookie-status cs-no'; return; }
-  // Проверяем что есть ключевые куки
-  const hasToken = val.includes('__Secure-access-token') || val.includes('xcid') || val.includes('abt_data');
-  if(hasToken){
-    el.textContent='✅ Куки заданы — Ozon активен'; el.className='cookie-status cs-ok';
-  } else {
-    el.textContent='⚠️ Куки есть, но не похожи на ozon.ru — проверьте'; el.className='cookie-status cs-empty';
-  }
-}
-
-function getOzonCookie(){
-  return document.getElementById('ozonCookie').value.trim() ||
-         (()=>{ try{ return localStorage.getItem('oz_cookie')||''; }catch(e){ return ''; } })();
-}
-
-function togglePl(pl){
-  S[pl].on=!S[pl].on;
-  document.getElementById(pl==='wb'?'togWB':'togOzon').classList.toggle('on');
-}
-function setF(pl,f,el){
-  S[pl].filter=f;
-  el.parentElement.querySelectorAll('.ft').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  renderT(pl);
-}
+function setF(f,el){ S.filter=f; el.parentElement.querySelectorAll('.ft').forEach(t=>t.classList.remove('on')); el.classList.add('on'); renderT(); }
 
 async function runScan(){
   const btn=document.getElementById('refreshBtn');
   const proxy=document.getElementById('proxyUrl').value.trim().replace(/\/+$/,'');
   const q=document.getElementById('searchQuery').value.trim();
   btn.disabled=true; btn.textContent='Загрузка...';
-
-  await Promise.allSettled([
-    S.wb.on ? fetchWB(proxy,q,1) : Promise.resolve(),
-    S.oz.on ? fetchOz(proxy,q,1) : Promise.resolve(),
-  ]);
-
-  const all=[...S.wb.products,...S.oz.products];
-  const e={
-    date:new Date().toLocaleString('ru'), q,
-    wbT:S.wb.total, wbO:S.wb.products.filter(p=>classify(p)==='our').length,
-    ozT:S.oz.total, ozO:S.oz.products.filter(p=>classify(p)==='our').length,
-    cl:all.filter(p=>classify(p)==='clone').length,
-  };
+  await fetchWB(proxy,q,1);
+  updKPI(); updAnalytics(); updComplaint();
+  const e={ date:new Date().toLocaleString('ru'), q,
+    total:S.total, our:S.products.filter(p=>classify(p)==='our').length,
+    clones:S.products.filter(p=>classify(p)==='clone').length,
+    median:median(S.products.slice(0,50).filter(p=>p.price>0).map(p=>p.price)),
+    brands:new Set(S.products.map(p=>p.brand)).size };
   S.hist.unshift(e); if(S.hist.length>30)S.hist.length=30;
-  try{localStorage.setItem('ef_h',JSON.stringify(S.hist));}catch(x){}
-
-  renderH(); updStats(); updComplaint();
+  try{localStorage.setItem('ef_h2',JSON.stringify(S.hist));}catch(x){}
+  renderH();
   document.getElementById('upd').textContent='Обновлено: '+new Date().toLocaleTimeString('ru');
   btn.disabled=false; btn.textContent='Обновить данные';
-  toast('Данные обновлены');
+  toast('Готово ✅');
 }
 
 async function fetchWB(proxy,q,page){
   const el=document.getElementById('wbT');
-  el.innerHTML=`<div class="sb"><div class="spin"></div><div class="stit">Загрузка WB...</div></div>`;
+  el.innerHTML=`<div class="sb"><div class="spin"></div><div class="stit">Загружаем WB...</div></div>`;
   try{
     const r=await fetch(`${proxy}/wb?q=${encodeURIComponent(q)}&page=${page}`);
     const d=await r.json();
     if(d.error&&!d.products?.length) throw new Error(d.error);
-    S.wb.products=page===1?d.products||[]:[...S.wb.products,...(d.products||[])];
-    S.wb.total=d.total||S.wb.products.length; S.wb.page=page;
-    renderT('wb');
-    document.getElementById('wbLM').style.display=S.wb.products.length<S.wb.total?'block':'none';
+    S.products=page===1?d.products||[]:[...S.products,...(d.products||[])];
+    S.total=d.total||S.products.length; S.page=page;
+    renderT();
+    document.getElementById('wbLM').style.display=S.products.length<S.total?'block':'none';
   }catch(e){
     el.innerHTML=`<div class="sb"><div class="si">❌</div><div class="stit">Ошибка WB</div><div class="eb">${esc(String(e))}</div></div>`;
   }
 }
-
-async function fetchOz(proxy,q,page){
-  const el=document.getElementById('ozT');
-  const cookie=getOzonCookie();
-
-  if(!cookie){
-    el.innerHTML=`<div class="sb"><div class="si">🍪</div><div class="stit">Нужны куки Ozon</div><div class="ssub">Вставьте куки в поле выше и нажмите «Сохранить»</div></div>`;
-    return;
-  }
-
-  el.innerHTML=`<div class="sb"><div class="spin"></div><div class="stit">Загрузка Ozon...</div></div>`;
-  try{
-    const r=await fetch(`${proxy}/ozon?q=${encodeURIComponent(q)}&page=${page}`, {
-      headers: { 'X-Ozon-Cookie': cookie }
-    });
-    const d=await r.json();
-
-    if(d.error==='no_cookie') throw new Error('Куки не дошли до воркера');
-    if(d.error==='redirect')  throw new Error('Куки устарели — обновите их в поле выше');
-    if(d.error&&!d.products?.length) throw new Error(d.message||d.error);
-
-    S.oz.products=page===1?d.products||[]:[...S.oz.products,...(d.products||[])];
-    S.oz.total=d.total||S.oz.products.length; S.oz.page=page;
-    renderT('oz');
-    document.getElementById('ozLM').style.display=S.oz.products.length<S.oz.total?'block':'none';
-  }catch(e){
-    el.innerHTML=`<div class="sb"><div class="si">❌</div><div class="stit">Ошибка Ozon</div><div class="ssub">${esc(String(e))}</div></div>`;
-  }
-}
-
-function more(pl){
+function more(){
   const proxy=document.getElementById('proxyUrl').value.trim().replace(/\/+$/,'');
   const q=document.getElementById('searchQuery').value.trim();
-  if(pl==='wb') fetchWB(proxy,q,(S.wb.page||1)+1);
-  else          fetchOz(proxy,q,(S.oz.page||1)+1);
+  fetchWB(proxy,q,(S.page||1)+1);
 }
 
-function renderT(pl){
-  const isWB=pl==='wb', d=S[pl], elId=isWB?'wbT':'ozT', pgId=isWB?'wbPg':'ozPg';
-  const list=d.products.filter(p=>{
-    const c=classify(p);
-    return d.filter==='all'?true:d.filter==='our'?c==='our':d.filter==='clone'?c==='clone':c==='other';
-  });
-  document.getElementById(pgId).textContent=`${list.length} из ${fmt(d.total)} артикулов`;
-  if(!list.length){
-    document.getElementById(elId).innerHTML=`<div class="sb"><div class="si">🤷</div><div class="stit">Ничего не найдено</div><div class="ssub">Смените фильтр</div></div>`;
-    return;
+// ── KPI ─────────────────────────────────────────────────
+function updKPI(){
+  const all=S.products, top50=all.slice(0,50);
+  const prices=top50.filter(p=>p.price>0).map(p=>p.price);
+  const reviews=top50.map(p=>p.reviews||0);
+  const ratings=top50.filter(p=>p.rating>0).map(p=>p.rating);
+  const brands=new Set(all.map(p=>p.brand.trim()).filter(Boolean));
+  const ourList=all.filter(p=>classify(p)==='our');
+  const clones=all.filter(p=>classify(p)==='clone');
+  const ourIdx=all.findIndex(p=>classify(p)==='our');
+
+  document.getElementById('kTotal').textContent=fmt(S.total)||'—';
+  document.getElementById('kBrands').textContent=`брендов: ${brands.size}`;
+  document.getElementById('kOur').textContent=ourList.length;
+  document.getElementById('kOurPos').textContent=ourIdx>=0?`лучшая позиция: #${ourIdx+1}`:'нет в выдаче';
+  document.getElementById('kClones').textContent=clones.length;
+  document.getElementById('kMedian').textContent=prices.length?fmt(median(prices))+' ₽':'—';
+  document.getElementById('kPriceRange').textContent=prices.length?`${fmt(Math.min(...prices))} — ${fmt(Math.max(...prices))} ₽`:'—';
+  document.getElementById('kAvgRev').textContent=fmt(mean(reviews));
+  document.getElementById('kAvgRating').textContent=ratings.length?(mean(ratings.map(r=>r*10))/10).toFixed(1)+' ★':'—';
+}
+
+// ── АНАЛИТИКА ────────────────────────────────────────────
+function updAnalytics(){
+  const top50=S.products.slice(0,50);
+  if(!top50.length){ document.getElementById('analyticsBlock').style.display='none'; return; }
+  document.getElementById('analyticsBlock').style.display='grid';
+
+  // 1. Топ брендов по суммарным отзывам
+  const brandMap={};
+  top50.forEach(p=>{ const b=p.brand||'—'; brandMap[b]=(brandMap[b]||0)+(p.reviews||0); });
+  const topBrands=Object.entries(brandMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxRev=topBrands[0]?.[1]||1;
+  const colors=['#CB11AB','#2E6B4F','#005BFF','#C07D2A','#B84040','#6B4FBF','#2E7A8A','#8A6B2E'];
+  document.getElementById('brandBars').innerHTML=topBrands.map(([brand,rev],i)=>`
+    <div class="bar-row">
+      <div class="bar-label" title="${esc(brand)}">${esc(brand)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(rev/maxRev*100)}%;background:${colors[i%colors.length]}20;border-left:3px solid ${colors[i%colors.length]}"></div></div>
+      <div class="bar-val">${fmt(rev)} отз.</div>
+    </div>`).join('');
+
+  // 2. Ценовые сегменты
+  const prices=top50.filter(p=>p.price>0).map(p=>p.price);
+  const mn=Math.min(...prices), mx=Math.max(...prices);
+  const step=Math.ceil((mx-mn)/5/100)*100||500;
+  const buckets=[];
+  for(let i=0;i<5;i++){
+    const lo=mn+i*step, hi=mn+(i+1)*step;
+    const cnt=prices.filter(p=>p>=lo&&p<hi).length;
+    buckets.push({lo,hi,cnt});
   }
+  const maxCnt=Math.max(...buckets.map(b=>b.cnt))||1;
+  document.getElementById('priceSegments').innerHTML=buckets.filter(b=>b.cnt>0).map(b=>`
+    <div class="price-row">
+      <span class="price-badge">${fmt(b.lo)}–${fmt(b.hi)} ₽</span>
+      <div style="flex:1;margin:0 10px">
+        <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${Math.round(b.cnt/maxCnt*100)}%;background:#CB11AB;border-radius:4px"></div>
+        </div>
+      </div>
+      <span style="font-size:11px;color:var(--muted)">${b.cnt} тов.</span>
+    </div>`).join('');
+
+  // 3. Наши позиции
+  const ourItems=S.products.map((p,i)=>({...p,rank:i+1})).filter(p=>classify(p)==='our');
+  document.getElementById('ourPositions').innerHTML=ourItems.length
+    ? `<table class="seg-table">
+        <thead><tr><th>Позиция</th><th>Название</th><th>Цена</th><th>Отзывы</th><th>Остаток</th></tr></thead>
+        <tbody>${ourItems.map(p=>`<tr>
+          <td><span class="pn ptop">#${p.rank}</span></td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(p.name)}">${esc(p.name)}</td>
+          <td>${fmt(p.price)} ₽</td>
+          <td class="rh">${fmt(p.reviews)}</td>
+          <td class="${p.stock>10?'stk-hi':p.stock>0?'stk-lo':'stk-no'}">${p.stock||'?'} шт.</td>
+        </tr>`).join('')}</tbody>
+      </table>`
+    : `<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Наших карточек не найдено</div>`;
+
+  // 4. Конкуренты рядом с нашими позициями
+  const nearby=[];
+  ourItems.forEach(our=>{
+    const lo=Math.max(0,our.rank-3), hi=Math.min(S.products.length,our.rank+2);
+    S.products.slice(lo,hi).forEach((p,i)=>{
+      const r=lo+i+1;
+      if(classify(p)!=='our') nearby.push({...p,rank:r,nearOur:our.rank});
+    });
+  });
+  const uniq=nearby.filter((p,i,a)=>a.findIndex(x=>x.id===p.id)===i).slice(0,8);
+  document.getElementById('nearbyCompetitors').innerHTML=uniq.length
+    ? `<table class="seg-table">
+        <thead><tr><th>#</th><th>Бренд</th><th>Отзывы</th><th>Цена</th><th>Рядом с</th></tr></thead>
+        <tbody>${uniq.map(p=>`<tr onclick="window.open('${esc(p.url)}','_blank')" style="cursor:pointer">
+          <td><span class="pn">${p.rank}</span></td>
+          <td style="font-weight:600;font-size:11px">${esc(p.brand||'—')}</td>
+          <td>${fmt(p.reviews)}</td>
+          <td>${fmt(p.price)} ₽</td>
+          <td style="color:var(--muted)">нашим #${p.nearOur}</td>
+        </tr>`).join('')}</tbody>
+      </table>`
+    : `<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Нет данных</div>`;
+}
+
+// ── TABLE ────────────────────────────────────────────────
+function renderT(){
+  const list=S.products.filter(p=>{
+    const c=classify(p);
+    return S.filter==='all'?true:S.filter==='our'?c==='our':S.filter==='clone'?c==='clone':c==='other';
+  });
+  document.getElementById('wbPg').textContent=`${list.length} из ${fmt(S.total)} артикулов`;
+  if(!list.length){ document.getElementById('wbT').innerHTML=`<div class="sb"><div class="si">🤷</div><div class="stit">Ничего не найдено</div></div>`; return; }
   const rows=list.map(p=>{
-    const cls=classify(p), rank=d.products.indexOf(p)+1, rev=p.reviews||0;
+    const cls=classify(p),rank=S.products.indexOf(p)+1,rev=p.reviews||0;
     const disc=p.oldPrice&&p.price&&p.oldPrice>p.price?Math.round((1-p.price/p.oldPrice)*100):0;
     const tag=cls==='our'?`<span class="tag tour">✅ Наш</span>`:cls==='clone'?`<span class="tag tcl">⚠️ Клон</span>`:`<span class="tag toth">—</span>`;
     const rc=rev===0?'rz':rev>=getMin()?'rh':'rl';
+    const stk=p.stock||0; const sc=stk>10?'stk-hi':stk>0?'stk-lo':'stk-no';
     return `<tr onclick="window.open('${esc(p.url)}','_blank')">
       <td><span class="pn ${rank<=10?'ptop':''}">${rank}</span></td>
       <td>${tag}</td>
       <td style="font-weight:600;font-size:11px;white-space:nowrap">${esc(p.brand||'—')}</td>
       <td class="nc" title="${esc(p.name)}">${esc(p.name||'—')}</td>
       <td><span class="pm">${fmt(p.price)} ₽</span>${disc?`<span class="pd">−${disc}%</span>`:''} ${p.oldPrice&&p.oldPrice!==p.price?`<br><span class="po">${fmt(p.oldPrice)} ₽</span>`:''}</td>
-      <td><span class="stars">${stars(p.rating)}</span> ${p.rating?(+p.rating).toFixed(1):'—'}</td>
+      <td><span class="stars">${starsH(p.rating)}</span> ${p.rating?(+p.rating).toFixed(1):'—'}</td>
       <td class="${rc}">${fmt(rev)}</td>
+      <td class="${sc}">${stk?fmt(stk)+' шт.':'?'}</td>
       <td><a class="tl" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
     </tr>`;
   }).join('');
-  document.getElementById(elId).innerHTML=`<div class="ts"><table>
-    <thead><tr><th>№</th><th>Статус</th><th>Бренд</th><th>Название</th><th>Цена</th><th>Рейтинг</th><th>Отзывы</th><th>Ссылка</th></tr></thead>
+  document.getElementById('wbT').innerHTML=`<div class="ts"><table>
+    <thead><tr><th>№</th><th>Статус</th><th>Бренд</th><th>Название</th><th>Цена</th><th>Рейтинг</th><th>Отзывы</th><th>Остаток</th><th>Ссылка</th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 }
 
-function updStats(){
-  const wO=S.wb.products.filter(p=>classify(p)==='our').length;
-  const oO=S.oz.products.filter(p=>classify(p)==='our').length;
-  const cl=[...S.wb.products,...S.oz.products].filter(p=>classify(p)==='clone').length;
-  const idx=S.wb.products.findIndex(p=>classify(p)==='our');
-  document.getElementById('wbTotal').textContent=fmt(S.wb.total)||'—';
-  document.getElementById('wbOur').textContent=`наших: ${wO}`;
-  document.getElementById('ozTotal').textContent=fmt(S.oz.total)||'—';
-  document.getElementById('ozOur').textContent=`наших: ${oO}`;
-  document.getElementById('clones').textContent=cl;
-  document.getElementById('topPos').textContent=idx>=0?`#${idx+1}`:'—';
-  document.getElementById('topName').textContent=idx>=0?(S.wb.products[idx].name||'').slice(0,32)+'…':'нет в топе';
-}
-
+// ── COMPLAINT ────────────────────────────────────────────
 function updComplaint(){
-  const cl=[...S.wb.products,...S.oz.products].filter(p=>classify(p)==='clone');
+  const cl=S.products.filter(p=>classify(p)==='clone');
   const el=document.getElementById('ctext');
   if(!cl.length){el.textContent='Подозрительных клонов не обнаружено ✅';return;}
   const date=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
-  const list=cl.map((p,i)=>`${i+1}. Артикул: ${p.id} | ${p.url}`).join('\n');
-  el.textContent=
-`Уважаемая служба поддержки Wildberries,
-
-Мы являемся правообладателем товарного знака «EasyForm». В ходе мониторинга поисковой выдачи по запросу «easyform» от ${date} выявлены товары, незаконно использующие наш товарный знак.
-
-Просим принять меры и удалить следующие нарушающие карточки:
-
-${list}
-
-Прилагаем: Свидетельство о регистрации товарного знака «EasyForm».
-
-С уважением, команда EasyForm`;
+  el.textContent=`Уважаемая служба поддержки Wildberries,\n\nМы являемся правообладателем товарного знака «EasyForm». В ходе мониторинга поисковой выдачи по запросу «easyform» от ${date} выявлены товары, незаконно использующие наш товарный знак.\n\nПросим принять меры и удалить следующие нарушающие карточки:\n\n${cl.map((p,i)=>`${i+1}. Артикул: ${p.id} | ${p.url}`).join('\n')}\n\nПрилагаем: Свидетельство о регистрации товарного знака «EasyForm».\n\nС уважением, команда EasyForm`;
 }
+function copyC(){ const t=document.getElementById('ctext').textContent; navigator.clipboard.writeText(t).then(()=>toast('Скопировано!')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Скопировано!');}); }
 
-function copyC(){
-  const t=document.getElementById('ctext').textContent;
-  navigator.clipboard.writeText(t).then(()=>toast('Текст скопирован!')).catch(()=>{
-    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Текст скопирован!');
-  });
-}
-
+// ── HISTORY ──────────────────────────────────────────────
 function renderH(){
   const tb=document.getElementById('hbody');
   if(!S.hist.length){tb.innerHTML=`<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">Пока нет данных</td></tr>`;return;}
   tb.innerHTML=S.hist.map(h=>`<tr>
-    <td style="color:var(--muted);white-space:nowrap">${h.date}</td><td><strong>${esc(h.q)}</strong></td>
-    <td class="cwb">${fmt(h.wbT)}</td><td class="cgr">${h.wbO}</td>
-    <td class="coz">${fmt(h.ozT)}</td><td class="cgr">${h.ozO}</td>
-    <td class="crd">${h.cl}</td></tr>`).join('');
+    <td style="color:var(--muted);white-space:nowrap">${h.date}</td>
+    <td><strong>${esc(h.q)}</strong></td>
+    <td class="cwb">${fmt(h.total)}</td>
+    <td class="cgr">${h.our}</td>
+    <td class="crd">${h.clones}</td>
+    <td>${h.median?fmt(h.median)+' ₽':'—'}</td>
+    <td>${h.brands||'—'}</td>
+  </tr>`).join('');
 }
-function clearH(){S.hist=[];try{localStorage.removeItem('ef_h');}catch(e){}renderH();toast('История очищена');}
+function clearH(){S.hist=[];try{localStorage.removeItem('ef_h2');}catch(e){}renderH();toast('История очищена');}
 
 let _tt;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2500);}
