@@ -230,6 +230,7 @@ const OTCH_B64="JVBERi0xLjMKJeLjz9MKMTAgMCBvYmoKPDwKL04gMwovQWx0ZXJuYXRlIC9EZXZp
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="cp" onclick="copyC()">Скопировать текст</button>
         <button class="cpdf" id="pdfBtn" onclick="genPDFs()">📄 Сгенерировать заявления PDF</button>
+          <button class="cpdf" onclick="exportForScript()" style="background:#1A1A18" title="Экспорт списка клонов для локального скрипта wb_submit.py">💾 Экспорт для скрипта</button>
       </div>
     </div>
     <div class="cb">
@@ -579,6 +580,31 @@ function updComplaint(){
 }
 
 // ─── PDF генерация ────────────────────────────────────────────────────────────
+function exportForScript(){
+  const clones=(S.products||[]).filter(p=>classify(p)==='clone');
+  if(!clones.length){ toast('⚠️ Нет клонов для экспорта'); return; }
+  const dateStr=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const payload={
+    exported: dateStr,
+    count: clones.length,
+    clones: clones.map(p=>({
+      id: p.id,
+      name: p.name||'',
+      brand: p.brand||'',
+      supplier: p.supplier||'',
+      url: p.url||`https://www.wildberries.ru/catalog/${p.id}/detail.aspx`,
+      price: p.price||0,
+      reviews: p.reviews||0,
+    }))
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='clones.json';
+  a.click();
+  toast(`✅ Экспортировано ${clones.length} клонов → clones.json\nСохраните файл в папку Клоны\\ рядом со скриптом`);
+}
+
 async function genPDFs(){
   const clones=S.products.filter(p=>classify(p)==='clone');
   if(!clones.length){toast('Клонов нет — нечего генерировать');return;}
