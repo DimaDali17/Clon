@@ -227,15 +227,17 @@
 
 <script>
 const OUR_BRANDS = ['easyform','easy form','ezfr','vaivai','vai vai'];
-const S = { products:[], total:0, page:1, filter:'all', hist:[] };
+const S = { products:[], total:0, page:1, filter:'all', hist:[], wl:new Set() };
 
 try { const s=localStorage.getItem('ef_h3'); if(s) S.hist=JSON.parse(s); } catch(e){}
+try { const w=localStorage.getItem('ef_wl'); if(w) S.wl=new Set(JSON.parse(w)); } catch(e){}
 renderH();
 
 function getMin(){ return parseInt(document.getElementById('minReviews').value)||6; }
 function isBrandOurs(p){ const b=(p.brand||'').toLowerCase().trim(),s=(p.supplier||'').toLowerCase().trim(); return OUR_BRANDS.some(x=>b===x||b.includes(x)||s===x||s.includes(x)); }
 function mentionsEF(p){ const b=(p.brand||'').toLowerCase(),n=(p.name||'').toLowerCase(); return b.includes('easyform')||b.includes('easy form')||b.includes('ezfr')||n.includes('easyform')||n.includes('easy form'); }
-function classify(p){ if(isBrandOurs(p)&&(p.reviews||0)>=getMin()) return 'our'; if(mentionsEF(p)&&(!isBrandOurs(p)||(p.reviews||0)<getMin())) return 'clone'; return 'other'; }
+function classify(p){ if(S.wl.has(p.id)) return 'other'; if(isBrandOurs(p)&&(p.reviews||0)>=getMin()) return 'our'; if(mentionsEF(p)&&(!isBrandOurs(p)||(p.reviews||0)<getMin())) return 'clone'; return 'other'; }
+function toggleWL(id){ if(S.wl.has(id)){S.wl.delete(id);toast('Возвращён в клоны');}else{S.wl.add(id);toast('Исключён из клонов ✓');} try{localStorage.setItem('ef_wl',JSON.stringify([...S.wl]));}catch(x){} renderT(); updKPI(); updComplaint(); }
 function fmt(n){ return n!=null?(+n).toLocaleString('ru'):'—'; }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function starsH(r){ const n=Math.round(+r||0); return '★'.repeat(Math.min(5,n))+'☆'.repeat(Math.max(0,5-n)); }
@@ -461,8 +463,20 @@ function renderT(){
   const makeRow=(p)=>{
     const cls=classify(p),rank=S.products.indexOf(p)+1,rev=p.reviews||0;
     const disc=p.oldPrice&&p.price&&p.oldPrice>p.price?Math.round((1-p.price/p.oldPrice)*100):0;
-    const tag=cls==='our'?`<span class="tag tour">✅ Наш</span>`:cls==='clone'?`<span class="tag tcl">⚠️ Клон</span>`:`<span class="tag toth">—</span>`;
+    const inWL=S.wl.has(p.id);
+    const tag=cls==='our'
+      ?`<span class="tag tour">✅ Наш</span>`
+      :cls==='clone'
+        ?`<span class="tag tcl">⚠️ Клон</span>`
+        :inWL
+          ?`<span class="tag toth" title="Исключён из клонов вручную">✓ Не клон</span>`
+          :`<span class="tag toth">—</span>`;
     const rc=rev===0?'rz':rev>=getMin()?'rh':'rl';
+    const wlBtn=cls==='clone'
+      ?`<button onclick="event.stopPropagation();toggleWL(${p.id})" style="font-size:10px;padding:3px 8px;border:1px solid var(--border);background:var(--bg);border-radius:5px;cursor:pointer;color:var(--muted);white-space:nowrap" title="Исключить из клонов">✕ не клон</button>`
+      :inWL
+        ?`<button onclick="event.stopPropagation();toggleWL(${p.id})" style="font-size:10px;padding:3px 8px;border:1px solid var(--green-border);background:var(--green-bg);border-radius:5px;cursor:pointer;color:var(--green);white-space:nowrap" title="Вернуть в клоны">↩ вернуть</button>`
+        :'';
     return `<tr onclick="window.open('${esc(p.url)}','_blank')">
       <td><span class="pn ${rank<=10?'ptop':''}">${rank}</span></td>
       <td>${tag}</td>
@@ -471,7 +485,7 @@ function renderT(){
       <td><span class="pm">${fmt(p.price)} ₽</span>${disc?`<span class="pd">−${disc}%</span>`:''} ${p.oldPrice&&p.oldPrice!==p.price?`<br><span class="po">${fmt(p.oldPrice)} ₽</span>`:''}</td>
       <td><span class="stars">${starsH(p.rating)}</span> ${p.rating?(+p.rating).toFixed(1):'—'}</td>
       <td class="${rc}">${fmt(rev)}</td>
-      <td><a class="tl" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
+      <td style="white-space:nowrap">${wlBtn}&nbsp;<a class="tl" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
     </tr>`;
   };
 
