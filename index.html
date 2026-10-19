@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EasyForm — Мониторинг поиска</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
   :root {
     --bg:#F0EDE6; --card:#FFFFFF; --border:#E2DDD6; --border-dark:#C8C2B8;
@@ -107,10 +109,18 @@
   .ozon-btn:hover{opacity:.85}
 
   .cc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
-  .ch{padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+  .ch{padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
   .ct{font-size:13px;font-weight:600} .cb{padding:14px 20px}
   .cx{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;font-size:12px;line-height:1.9;color:var(--text);white-space:pre-wrap;font-family:inherit}
   .cp{background:var(--text);color:#fff;border:none;border-radius:var(--rs);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit} .cp:hover{opacity:.85}
+  .cpdf{background:#CB11AB;color:#fff;border:none;border-radius:var(--rs);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit} .cpdf:hover{opacity:.85} .cpdf:disabled{opacity:.4;cursor:not-allowed}
+  .clone-confirm-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px}
+  .clone-confirm-tbl th{text-align:left;padding:7px 10px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);background:var(--bg)}
+  .clone-confirm-tbl td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+  .clone-confirm-tbl tr:last-child td{border-bottom:none}
+  .pdf-progress{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;font-size:12px;margin-top:10px;display:none}
+  .pdf-progress-bar{height:6px;background:var(--border);border-radius:3px;margin-top:8px;overflow:hidden}
+  .pdf-progress-fill{height:100%;background:#CB11AB;border-radius:3px;transition:width .3s}
 
   .sb{text-align:center;padding:32px 20px;color:var(--muted)}
   .si{font-size:28px;margin-bottom:8px} .stit{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px} .ssub{font-size:11px}
@@ -210,8 +220,28 @@
   </div>
 
   <div class="cc" id="complaint">
-    <div class="ch"><span class="ct">⚠️ Заявка в службу поддержки WB</span><button class="cp" onclick="copyC()">Скопировать</button></div>
-    <div class="cb"><div class="cx" id="ctext">После обновления данных здесь появится готовый текст заявки.</div></div>
+    <div class="ch">
+      <span class="ct">⚠️ Заявка в службу поддержки WB</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="cp" onclick="copyC()">Скопировать текст</button>
+        <button class="cpdf" id="pdfBtn" onclick="genPDFs()">📄 Сгенерировать заявления PDF</button>
+      </div>
+    </div>
+    <div class="cb">
+      <div id="cloneConfirmWrap" style="display:none">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--red)">Список клонов для заявления:</div>
+        <table class="clone-confirm-tbl">
+          <thead><tr><th>№</th><th>Артикул</th><th>Бренд / продавец</th><th>Название</th><th>Ссылка</th></tr></thead>
+          <tbody id="cloneConfirmBody"></tbody>
+        </table>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Нажмите «Сгенерировать заявления PDF» — для каждого клона создастся отдельный PDF с заявлением. Все файлы скачаются архивом (zip).</div>
+      </div>
+      <div class="pdf-progress" id="pdfProgress">
+        <span id="pdfProgressText">Генерируем...</span>
+        <div class="pdf-progress-bar"><div class="pdf-progress-fill" id="pdfProgressFill" style="width:0%"></div></div>
+      </div>
+      <div class="cx" id="ctext">После обновления данных здесь появится готовый текст заявки.</div>
+    </div>
   </div>
 
   <div class="hc">
@@ -508,12 +538,224 @@ function renderT(){
   </table></div>`;
 }
 
+// Порядковый номер заявления — сохраняем в localStorage
+function getNextClaimNum(){
+  let n=1; try{n=parseInt(localStorage.getItem('ef_claim_num')||'1');}catch(e){}
+  return n;
+}
+function bumpClaimNum(count){
+  try{localStorage.setItem('ef_claim_num',String(getNextClaimNum()+count));}catch(e){}
+}
+
 function updComplaint(){
   const cl=S.products.filter(p=>classify(p)==='clone');
   const el=document.getElementById('ctext');
-  if(!cl.length){el.textContent='Подозрительных клонов не обнаружено ✅';return;}
+  const wrap=document.getElementById('cloneConfirmWrap');
+  const tbody=document.getElementById('cloneConfirmBody');
+  if(!cl.length){
+    el.textContent='Подозрительных клонов не обнаружено ✅';
+    wrap.style.display='none';
+    return;
+  }
   const date=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
-  el.textContent=`Уважаемая служба поддержки Wildberries,\n\nМы являемся правообладателем товарного знака «EasyForm». В ходе мониторинга поисковой выдачи по запросу «easyform» от ${date} выявлены товары, незаконно использующие наш товарный знак.\n\nПросим принять меры и удалить следующие нарушающие карточки:\n\n${cl.map((p,i)=>`${i+1}. Артикул: ${p.id} | ${p.url}`).join('\n')}\n\nПрилагаем: Свидетельство о регистрации товарного знака «EasyForm».\n\nС уважением, команда EasyForm`;
+  el.textContent=`Уважаемая служба поддержки Wildberries,\n\nМы являемся правообладателем товарного знака «EasyForm» (рег. №1001173, рег. отчуждения РД0539528). В ходе мониторинга поисковой выдачи по запросу «easyform» от ${date} выявлены товары, незаконно использующие наш товарный знак.\n\nПросим принять меры и удалить следующие нарушающие карточки:\n\n${cl.map((p,i)=>`${i+1}. Артикул: ${p.id} | Продавец: ${p.supplier||p.brand||'—'} | ${p.url}`).join('\n')}\n\nПрилагаем: Свидетельство о регистрации товарного знака «EasyForm», уведомление об отчуждении исключительного права.\n\nС уважением, ИП Безникина Н.В.`;
+  // Таблица подтверждения
+  wrap.style.display='block';
+  tbody.innerHTML=cl.map((p,i)=>`<tr>
+    <td style="color:var(--muted)">${i+1}</td>
+    <td><strong>${p.id}</strong></td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(p.supplier||p.brand)}">${esc(p.supplier||p.brand||'—')}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(p.name)}">${esc(p.name||'—')}</td>
+    <td><a class="tl" href="${esc(p.url)}" target="_blank">открыть →</a></td>
+  </tr>`).join('');
+}
+
+// ─── PDF генерация ────────────────────────────────────────────────────────────
+async function genPDFs(){
+  const clones=S.products.filter(p=>classify(p)==='clone');
+  if(!clones.length){toast('Клонов нет — нечего генерировать');return;}
+  if(typeof window.jspdf==='undefined'){toast('Ошибка: jsPDF не загружен');return;}
+
+  const btn=document.getElementById('pdfBtn');
+  const prog=document.getElementById('pdfProgress');
+  const progText=document.getElementById('pdfProgressText');
+  const progFill=document.getElementById('pdfProgressFill');
+  btn.disabled=true;
+  prog.style.display='block';
+
+  const { jsPDF }=window.jspdf;
+  let zip=null;
+  if(typeof JSZip!=='undefined') zip=new JSZip();
+
+  const startNum=getNextClaimNum();
+  const dateStr=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  for(let i=0;i<clones.length;i++){
+    const p=clones[i];
+    const num=startNum+i;
+    progText.textContent=`Генерируем заявление ${i+1} из ${clones.length}: арт. ${p.id}`;
+    progFill.style.width=`${Math.round((i+1)/clones.length*100)}%`;
+
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    buildClaimPDF(doc, num, p, dateStr);
+
+    const seller=(p.supplier||p.brand||'seller').replace(/[^\wа-яёА-ЯЁ\s\-\.]/gi,'').trim().replace(/\s+/g,'_').slice(0,50);
+    const fname=`${dateStr.replace(/\./g,'_')}_${num}_${seller}.pdf`;
+
+    if(zip){
+      const blob=doc.output('arraybuffer');
+      const folder=zip.folder(String(p.id));
+      folder.file(fname,blob);
+    } else {
+      doc.save(fname);
+    }
+    // небольшая пауза чтобы не блокировать UI
+    await new Promise(r=>setTimeout(r,30));
+  }
+
+  bumpClaimNum(clones.length);
+
+  if(zip){
+    progText.textContent='Упаковываем архив...';
+    const content=await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(content);
+    a.download=`EasyForm_Заявления_${dateStr.replace(/\./g,'_')}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  prog.style.display='none';
+  btn.disabled=false;
+  toast(`✅ ${clones.length} заявлений сгенерировано`);
+}
+
+function buildClaimPDF(doc, num, p, dateStr){
+  const LM=20, RM=190, W=RM-LM;
+  const seller=p.supplier||p.brand||'—';
+  const articleUrl=p.url||`https://www.wildberries.ru/catalog/${p.id}/detail.aspx`;
+
+  // Шрифт — используем встроенный helvetica (кириллица через latin1 или встроенный)
+  // jsPDF поддерживает UTF-8 через setLanguage — но для надёжности используем рус через cp1251-safe path
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.setTextColor(30,30,30);
+
+  // Заголовок
+  let y=18;
+  doc.text(`ЗАЯВЛЕНИЕ №${num}`, RM/2+LM/2, y, {align:'center'});
+  y+=7;
+  doc.setFontSize(10);
+  doc.setFont('helvetica','normal');
+  doc.text('о нарушении исключительных прав правообладателя', RM/2+LM/2, y, {align:'center'});
+  y+=10;
+
+  // Линия
+  doc.setDrawColor(200,200,200);
+  doc.line(LM,y,RM,y);
+  y+=8;
+
+  // Основной текст
+  doc.setFontSize(11);
+  const lines=doc.splitTextToSize(
+    `Я, индивидуальный предприниматель Безникина Н.В. (ОГРНИП 321508100290252), являюсь правообладателем и/или законным пользователем исключительных прав на товарный знак «EasyForm» (свидетельство №1001173, рег. отчуждения РД0539528 от 29.04.2026), используемый для продвижения продукции.`,
+    W
+  );
+  doc.text(lines,LM,y);
+  y+=lines.length*6+5;
+
+  const lines2=doc.splitTextToSize(
+    `Мне стало известно, что в карточке товара, размещённой на маркетплейсе Wildberries по адресу: ${articleUrl} (Артикул: ${p.id}), продавцом «${seller}» (далее — «Продавец») используются обозначения, сходные до степени смешения с товарным знаком «EasyForm», без моего согласия и без предоставления каких-либо правовых оснований.`,
+    W
+  );
+  doc.text(lines2,LM,y);
+  y+=lines2.length*6+5;
+
+  // Блок «Указанные действия нарушителя»
+  doc.setFont('helvetica','bold');
+  doc.text('Продавец использует товарный знак «EasyForm»:',LM,y);
+  y+=7;
+  doc.setFont('helvetica','normal');
+  const bullets=[
+    'без разрешения правообладателя;',
+    'в коммерческих целях;',
+    'для продвижения собственного товара, вводя покупателей в заблуждение.',
+  ];
+  bullets.forEach(b=>{doc.text(`• ${b}`,LM+4,y);y+=6;});
+  y+=4;
+
+  // Нарушения
+  doc.setFont('helvetica','bold');
+  doc.text('Данные действия нарушают:',LM,y);
+  y+=7;
+  doc.setFont('helvetica','normal');
+  const viols=[
+    'нормы законодательства РФ об авторском праве и интеллектуальной собственности (ч.4 ГК РФ);',
+    'Правила использования контента и защиты интеллектуальных прав платформы Wildberries.',
+  ];
+  viols.forEach(v=>{
+    const vlines=doc.splitTextToSize(`• ${v}`,W-4);
+    doc.text(vlines,LM+4,y);
+    y+=vlines.length*6;
+  });
+  y+=4;
+
+  // Приложения
+  doc.setFont('helvetica','bold');
+  doc.text('В подтверждение своих прав прилагаю:',LM,y);
+  y+=7;
+  doc.setFont('helvetica','normal');
+  const attachments=[
+    'Уведомление о государственной регистрации отчуждения исключительного права (Роспатент, рег. №РД0539528);',
+    'Выписка из ЕГРИП (ОГРНИП 321508100290252);',
+    'Скриншот карточки товара нарушителя (арт. '+p.id+');',
+    'Настоящее заявление правообладателя.',
+  ];
+  attachments.forEach((a,i)=>{
+    const alines=doc.splitTextToSize(`${i+1}. ${a}`,W-4);
+    doc.text(alines,LM+4,y);
+    y+=alines.length*6;
+  });
+  y+=4;
+
+  // Просьба
+  doc.setFont('helvetica','bold');
+  doc.text('Прошу Wildberries:',LM,y);
+  y+=7;
+  doc.setFont('helvetica','normal');
+  const asks=[
+    'рассмотреть данное обращение;',
+    'признать использование товарного знака «EasyForm» нарушающим мои исключительные права;',
+    'удалить карточку товара Продавца и/или применить меры, предусмотренные правилами платформы.',
+  ];
+  asks.forEach(a=>{
+    const alines=doc.splitTextToSize(`• ${a}`,W-4);
+    doc.text(alines,LM+4,y);
+    y+=alines.length*6;
+  });
+  y+=8;
+
+  const lines3=doc.splitTextToSize(
+    'Настоящим подтверждаю, что предоставленная информация является достоверной, и я осознаю ответственность за предоставление ложных сведений.',
+    W
+  );
+  doc.text(lines3,LM,y);
+  y+=lines3.length*6+10;
+
+  // Подпись
+  doc.text(`Дата: ${dateStr}`,LM,y);
+  y+=8;
+  doc.text('Подпись: _______________________',LM,y);
+  y+=7;
+  doc.setFont('helvetica','bold');
+  doc.text('Безникина Н.В.',LM,y);
+
+  // Нижний колонтитул
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(150,150,150);
+  doc.text(`EasyForm Monitor • арт. ${p.id} • ${dateStr}`, LM, 285);
 }
 function copyC(){const t=document.getElementById('ctext').textContent;navigator.clipboard.writeText(t).then(()=>toast('Скопировано!')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Скопировано!');});}
 
