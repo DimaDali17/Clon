@@ -597,12 +597,38 @@ function exportForScript(){
       reviews: p.reviews||0,
     }))
   };
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const json=JSON.stringify(payload,null,2);
+  // Сохраняем в localStorage — скрипт может читать отсюда через файл
+  try{ localStorage.setItem('ef_clones_export', json); }catch(e){}
+
+  // Скачиваем файл (браузер кладёт в Загрузки — скрипт ищет там автоматически)
+  const blob=new Blob([json],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='clones.json';
   a.click();
-  toast(`✅ Экспортировано ${clones.length} клонов → clones.json\nСохраните файл в папку Клоны\\ рядом со скриптом`);
+
+  // Показываем инструкцию
+  const modal=document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`
+    <div style="background:#fff;border-radius:14px;max-width:500px;width:100%;padding:24px;font-family:Inter,sans-serif">
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px">✅ clones.json скачан (${clones.length} клонов)</div>
+      <div style="background:#F0EDE6;border-radius:8px;padding:14px;font-size:13px;line-height:1.8;margin-bottom:16px">
+        <b>Файл сохранён в папку Загрузки.</b><br>
+        Скрипт найдёт его там автоматически — <b>перекладывать не нужно.</b><br><br>
+        Просто запустите <b>ЗАПУСТИТЬ.bat</b> из папки Клоны.
+      </div>
+      <div style="font-size:12px;color:#888;margin-bottom:16px">
+        Скрипт ищет clones.json в:<br>
+        • C:\\Users\\…\\Downloads\\<br>
+        • C:\\Users\\…\\Desktop\\<br>
+        • рядом с wb_submit.py
+      </div>
+      <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#CB11AB;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;width:100%">Понятно</button>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{ if(e.target===modal) modal.remove(); });
 }
 
 async function genPDFs(){
