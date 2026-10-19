@@ -723,56 +723,56 @@ function buildClaimPDF(doc, num, p, dateStr){
 
   // DejaVu Sans — встроенный кириллический шрифт (base64 TTF)
   doc.setFont('DejaVuSans','bold');
-  doc.setFontSize(13);
+  doc.setFontSize(12);
   doc.setTextColor(30,30,30);
 
   // Заголовок
-  let y=18;
+  let y=16;
   doc.text(`ЗАЯВЛЕНИЕ №${num}`, RM/2+LM/2, y, {align:'center'});
   y+=7;
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont('DejaVuSans','normal');
   doc.text('о нарушении исключительных прав правообладателя', RM/2+LM/2, y, {align:'center'});
-  y+=10;
+  y+=7;
 
   // Линия
   doc.setDrawColor(200,200,200);
   doc.line(LM,y,RM,y);
-  y+=8;
+  y+=5;
 
   // Основной текст
-  doc.setFontSize(11);
+  doc.setFontSize(9.5);
   const lines=doc.splitTextToSize(
     `Я, индивидуальный предприниматель Безникина Н.В. (ОГРНИП 321508100290252), являюсь правообладателем и/или законным пользователем исключительных прав на товарный знак «EasyForm» (свидетельство №1001173, рег. отчуждения РД0539528 от 29.04.2026), используемый для продвижения продукции.`,
     W
   );
   doc.text(lines,LM,y);
-  y+=lines.length*6+5;
+  y+=lines.length*5+3;
 
   const lines2=doc.splitTextToSize(
     `Мне стало известно, что в карточке товара, размещённой на маркетплейсе Wildberries по адресу: ${articleUrl} (Артикул: ${p.id}), продавцом «${seller}» (далее — «Продавец») используются обозначения, сходные до степени смешения с товарным знаком «EasyForm», без моего согласия и без предоставления каких-либо правовых оснований.`,
     W
   );
   doc.text(lines2,LM,y);
-  y+=lines2.length*6+5;
+  y+=lines2.length*5+3;
 
   // Блок «Указанные действия нарушителя»
   doc.setFont('DejaVuSans','bold');
   doc.text('Продавец использует товарный знак «EasyForm»:',LM,y);
-  y+=7;
+  y+=6;
   doc.setFont('DejaVuSans','normal');
   const bullets=[
     'без разрешения правообладателя;',
     'в коммерческих целях;',
     'для продвижения собственного товара, вводя покупателей в заблуждение.',
   ];
-  bullets.forEach(b=>{doc.text(`• ${b}`,LM+4,y);y+=6;});
+  bullets.forEach(b=>{doc.text(`• ${b}`,LM+4,y);y+=5;});
   y+=4;
 
   // Нарушения
   doc.setFont('DejaVuSans','bold');
   doc.text('Данные действия нарушают:',LM,y);
-  y+=7;
+  y+=6;
   doc.setFont('DejaVuSans','normal');
   const viols=[
     'нормы законодательства РФ об авторском праве и интеллектуальной собственности (ч.4 ГК РФ);',
@@ -781,14 +781,14 @@ function buildClaimPDF(doc, num, p, dateStr){
   viols.forEach(v=>{
     const vlines=doc.splitTextToSize(`• ${v}`,W-4);
     doc.text(vlines,LM+4,y);
-    y+=vlines.length*6;
+    y+=vlines.length*5;
   });
-  y+=4;
+  y+=3;
 
   // Приложения
   doc.setFont('DejaVuSans','bold');
   doc.text('В подтверждение своих прав прилагаю:',LM,y);
-  y+=7;
+  y+=6;
   doc.setFont('DejaVuSans','normal');
   const attachments=[
     'Уведомление о государственной регистрации отчуждения исключительного права (Роспатент, рег. №РД0539528);',
@@ -799,14 +799,14 @@ function buildClaimPDF(doc, num, p, dateStr){
   attachments.forEach((a,i)=>{
     const alines=doc.splitTextToSize(`${i+1}. ${a}`,W-4);
     doc.text(alines,LM+4,y);
-    y+=alines.length*6;
+    y+=alines.length*5;
   });
-  y+=4;
+  y+=3;
 
   // Просьба
   doc.setFont('DejaVuSans','bold');
   doc.text('Прошу Wildberries:',LM,y);
-  y+=7;
+  y+=6;
   doc.setFont('DejaVuSans','normal');
   const asks=[
     'рассмотреть данное обращение;',
@@ -816,16 +816,16 @@ function buildClaimPDF(doc, num, p, dateStr){
   asks.forEach(a=>{
     const alines=doc.splitTextToSize(`• ${a}`,W-4);
     doc.text(alines,LM+4,y);
-    y+=alines.length*6;
+    y+=alines.length*5;
   });
-  y+=8;
+  y+=5;
 
   const lines3=doc.splitTextToSize(
     'Настоящим подтверждаю, что предоставленная информация является достоверной, и я осознаю ответственность за предоставление ложных сведений.',
     W
   );
   doc.text(lines3,LM,y);
-  y+=lines3.length*6+10;
+  y+=lines3.length*5+6;
 
   // Подпись + печать — как в образце: штамп слева снизу, подпись над ним
   // Проверяем что хватает места (A4 = 297мм, нижний отступ 12мм)
@@ -839,9 +839,9 @@ function buildClaimPDF(doc, num, p, dateStr){
   doc.setFontSize(11);
   doc.setTextColor(30,30,30);
   doc.text(`Дата: ${dateStr}`,LM,y);
-  y+=8;
+  y+=6;
   doc.text('Подпись: _______________________',LM,y);
-  y+=7;
+  y+=6;
   doc.setFont('DejaVuSans','bold');
   doc.text('Безникина Н.В.',LM,y);
 
