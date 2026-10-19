@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root {
     --bg:#F0EDE6; --card:#FFFFFF; --border:#E2DDD6; --border-dark:#C8C2B8;
@@ -620,6 +621,10 @@ async function genPDFs(){
       if(typeof OTCH_B64!=='undefined'&&OTCH_B64){
         folder.file('Уведомление_об_отчуждении_РД0539528.pdf', OTCH_B64, {base64:true});
       }
+      // Скриншот карточки — если был сделан через кнопку «📸»
+      if(window._screenshots&&window._screenshots[String(p.id)]){
+        folder.file('screenshot_'+p.id+'.png', window._screenshots[String(p.id)]);
+      }
     } else {
       doc.save(fname);
     }
@@ -642,7 +647,9 @@ async function genPDFs(){
 
   prog.style.display='none';
   btn.disabled=false;
-  toast(`✅ ${clones.length} заявлений сгенерировано — в каждой папке: заявление + ЕГРИП + уведомление`);
+  const ssCount=window._screenshots?Object.keys(window._screenshots).length:0;
+  const ssNote=ssCount>0?` + ${ssCount} скриншот(ов)`:'';
+  toast(`✅ ${clones.length} заявлений сгенерировано — в каждой папке: заявление + ЕГРИП + уведомление${ssNote}`);
 }
 
 function buildClaimPDF(doc, num, p, dateStr){
@@ -855,12 +862,15 @@ function fillWBForm(p){
         ✅ <b>${dateStr.replace(/\./g,'_')}_${claimNum}_${(seller).replace(/[^\wа-яёА-ЯЁ]/gi,'_').slice(0,30)}.pdf</b> — заявление правообладателя<br>
         ✅ <b>Уведомление_об_отчуждении_РД0539528.pdf</b> — подтверждение прав<br>
         ✅ <b>Выписка_ЕГРИП_Безникина.pdf</b> — регистрация ИП<br>
-        ✅ Скриншот карточки нарушителя (сделайте вручную или ниже)
+        ✅ <b>screenshot_${p.id}.png</b> — скриншот карточки нарушителя
       </div>
+
+      <div id="ssStatus_${p.id}" style="display:none;background:#EBF4EF;border:1px solid #B8D9C8;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px"></div>
 
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <a href="https://seller.wildberries.ru/copyright-owner/new-appeal" target="_blank" style="background:#CB11AB;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block">🚀 Открыть форму WB</a>
-        <a href="${p.url}" target="_blank" style="background:#F0EDE6;color:#1A1A18;border:1px solid #E2DDD6;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block">🔗 Открыть карточку нарушителя</a>
+        <button onclick="captureScreenshot('${p.id}','${p.url.replace(/'/g,"\\'")}')" id="ssBtn_${p.id}" style="background:#1A1A18;color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer">📸 Скриншот карточки</button>
+        <a href="${p.url}" target="_blank" style="background:#F0EDE6;color:#1A1A18;border:1px solid #E2DDD6;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block">🔗 Открыть карточку</a>
         <button onclick="this.closest('div[style*=fixed]').remove()" style="background:transparent;color:#8A857C;border:1px solid #E2DDD6;border-radius:8px;padding:10px 16px;font-size:13px;cursor:pointer">Закрыть</button>
       </div>
     </div>
@@ -868,6 +878,74 @@ function fillWBForm(p){
   document.body.appendChild(modal);
   // Клик вне модала — закрыть
   modal.addEventListener('click',e=>{ if(e.target===modal) modal.remove(); });
+}
+
+// Скриншот карточки WB
+// WB блокирует iframe/CORS — используем thum.io (бесплатный, без ключа)
+async function captureScreenshot(artId, cardUrl){
+  const btn=document.getElementById('ssBtn_'+artId);
+  const status=document.getElementById('ssStatus_'+artId);
+  if(!btn||!status) return;
+  btn.disabled=true;
+  btn.textContent='⏳ Делаю скриншот...';
+  status.style.display='block';
+  status.style.background='#EBF4EF';
+  status.style.borderColor='#B8D9C8';
+  status.textContent='🔄 Загружаю скриншот карточки...';
+
+  try{
+    // thum.io — бесплатный сервис скриншотов без API-ключа
+    const thumbUrl=`https://image.thum.io/get/width/1280/crop/900/png/${encodeURIComponent(cardUrl)}`;
+    const resp=await fetch(thumbUrl,{signal:AbortSignal.timeout(20000)});
+    if(!resp.ok) throw new Error('http '+resp.status);
+    const blob=await resp.blob();
+    if(!blob.type.startsWith('image/')) throw new Error('not-image');
+
+    // Сохраняем в глобальный кэш — войдёт в ZIP при генерации
+    if(!window._screenshots) window._screenshots={};
+    const arrBuf=await blob.arrayBuffer();
+    window._screenshots[artId]=new Uint8Array(arrBuf);
+
+    // Показываем превью
+    const objectUrl=URL.createObjectURL(blob);
+    status.innerHTML=`✅ Скриншот получен!
+      <a href="${objectUrl}" download="screenshot_${artId}.png" style="color:#CB11AB;font-weight:600;margin-left:6px">💾 Скачать PNG</a>
+      <br><img src="${objectUrl}" style="margin-top:8px;max-width:100%;border-radius:6px;border:1px solid #B8D9C8;max-height:180px;object-fit:cover">`;
+    toast('📸 Скриншот арт. '+artId+' готов — войдёт в ZIP автоматически');
+  } catch(e){
+    // Fallback: пошаговая инструкция
+    status.style.background='#FFF3E0';
+    status.style.borderColor='#FFB74D';
+    status.innerHTML=`⚠️ Не удалось получить скриншот автоматически.<br>
+      <b>Сделайте вручную (2 сек):</b><br>
+      1. <a href="${cardUrl}" target="_blank" style="color:#CB11AB;font-weight:600">🔗 Открыть карточку нарушителя →</a><br>
+      2. Нажмите <kbd style="background:#eee;padding:1px 5px;border-radius:3px;font-size:11px">Win+Shift+S</kbd> и выделите экран<br>
+      3. Сохраните как <b>screenshot_${artId}.png</b><br>
+      <div style="margin-top:8px">
+        <label style="cursor:pointer;background:#CB11AB;color:#fff;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600">
+          📂 Загрузить PNG сюда
+          <input type="file" accept="image/*" style="display:none" onchange="loadScreenshotFile(event,'${artId}')">
+        </label>
+        <span id="ssFileStatus_${artId}" style="margin-left:8px;font-size:11px;color:#4CAF50"></span>
+      </div>`;
+  }
+  btn.disabled=false;
+  btn.textContent='📸 Скриншот карточки';
+}
+
+// Загрузка скриншота вручную из файла
+function loadScreenshotFile(e, artId){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    if(!window._screenshots) window._screenshots={};
+    window._screenshots[artId]=new Uint8Array(ev.target.result);
+    const s=document.getElementById('ssFileStatus_'+artId);
+    if(s) s.textContent='✅ '+file.name+' загружен';
+    toast('📸 Скриншот арт. '+artId+' загружен — войдёт в ZIP');
+  };
+  reader.readAsArrayBuffer(file);
 }
 </script>
 </body>
