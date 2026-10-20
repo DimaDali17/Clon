@@ -175,6 +175,17 @@ const STAMP_B64="iVBORw0KGgoAAAANSUhEUgAAAkwAAAIaCAIAAABd0YV+AAAACXBIWXMAAAsSAAA
     <div class="fg"><div class="fl">Мин. отзывов → Наш</div><input class="fi" type="number" id="minReviews" value="6"></div>
   </div>
 
+  <!-- Ручное добавление артикула/ссылки -->
+  <div class="scard" style="align-items:center;gap:10px">
+    <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap">Добавить вручную</div>
+    <div class="fg" style="flex:1;min-width:200px">
+      <div class="fl">Артикул или ссылка WB</div>
+      <input class="fi" type="text" id="manualInput" placeholder="1924204939 или https://wildberries.ru/catalog/…" style="width:100%" onkeydown="if(event.key==='Enter')addManual()">
+    </div>
+    <button class="btn" onclick="addManual()" id="manualBtn" style="flex-shrink:0">Добавить</button>
+    <div id="manualStatus" style="font-size:11px;color:var(--muted);min-width:120px"></div>
+  </div>
+
   <div class="kpi-grid">
     <div class="kpi"><div class="kpi-l">Всего в выдаче</div><div class="kpi-v cwb" id="kTotal">—</div><div class="kpi-s" id="kBrands">уникальных брендов: —</div></div>
     <div class="kpi"><div class="kpi-l">Наших карточек</div><div class="kpi-v cgr" id="kOur">—</div><div class="kpi-s" id="kOurPos">лучшая позиция: —</div></div>
@@ -249,6 +260,86 @@ function isBrandOurs(p){ const b=(p.brand||'').toLowerCase().trim(),s=(p.supplie
 function mentionsEF(p){ const b=(p.brand||'').toLowerCase(),n=(p.name||'').toLowerCase(); return b.includes('easyform')||b.includes('easy form')||b.includes('ezfr')||n.includes('easyform')||n.includes('easy form'); }
 function classify(p){ if(S.wl.has(p.id)) return 'other'; if(isBrandOurs(p)&&(p.reviews||0)>=getMin()) return 'our'; if(mentionsEF(p)&&(!isBrandOurs(p)||(p.reviews||0)<getMin())) return 'clone'; return 'other'; }
 function toggleWL(id){ if(S.wl.has(id)){S.wl.delete(id);toast('Возвращён в клоны');}else{S.wl.add(id);toast('Исключён из клонов ✓');} try{localStorage.setItem('ef_wl',JSON.stringify([...S.wl]));}catch(x){} renderT(); updKPI(); updComplaint(); }
+
+// ── Ручное добавление артикула/ссылки ─────────────────────────────────────────
+async function addManual(){
+  const inp=document.getElementById('manualInput');
+  const btn=document.getElementById('manualBtn');
+  const status=document.getElementById('manualStatus');
+  const raw=(inp.value||'').trim();
+  if(!raw){ inp.focus(); return; }
+
+  // Извлекаем артикул из ссылки или берём напрямую
+  let artId='';
+  const m=raw.match(/catalog\/(\d+)/)||raw.match(/\/(\d{7,12})(?:\/|$)/);
+  if(m) artId=m[1];
+  else if(/^\d{5,12}$/.test(raw)) artId=raw;
+
+  if(!artId){
+    status.style.color='var(--red)';
+    status.textContent='⚠️ Не распознан артикул';
+    return;
+  }
+
+  // Проверяем нет ли уже
+  if(S.products.some(p=>String(p.id)===artId)){
+    status.style.color='var(--muted)';
+    status.textContent='Уже есть в списке';
+    inp.value='';
+    return;
+  }
+
+  btn.disabled=true;
+  status.style.color='var(--muted)';
+  status.textContent='⏳ Загружаю…';
+
+  try{
+    // WB карточка через публичный API
+    const apiUrl=`https://card.wb.ru/cards/v2/detail?appType=1&curr=rub&dest=-1257786&spp=30&nm=${artId}`;
+    const resp=await fetch(apiUrl,{signal:AbortSignal.timeout(12000)});
+    if(!resp.ok) throw new Error('http '+resp.status);
+    const json=await resp.json();
+    const prod=json?.data?.products?.[0];
+    if(!prod) throw new Error('not-found');
+
+    // Нормализуем в формат S.products
+    const sizes=prod.sizes||[];
+    const price=sizes[0]?.price?.total ? Math.round(sizes[0].price.total/100) : (prod.salePriceU ? Math.round(prod.salePriceU/100) : 0);
+    const oldPrice=sizes[0]?.price?.basic ? Math.round(sizes[0].price.basic/100) : 0;
+    const p={
+      id:         artId,
+      name:       prod.name||'',
+      brand:      prod.brand||'',
+      supplier:   prod.supplier||prod.supplierName||'',
+      supplierId: prod.supplierId||0,
+      price:      price,
+      oldPrice:   oldPrice>price?oldPrice:0,
+      rating:     prod.reviewRating||prod.rating||0,
+      reviews:    prod.feedbacks||prod.reviewCount||0,
+      position:   S.products.length+1,
+      url:        `https://www.wildberries.ru/catalog/${artId}/detail.aspx`,
+      _manual:    true,
+    };
+
+    S.products.unshift(p);
+    renderT(); updKPI(); updComplaint();
+
+    const cls=classify(p);
+    const label=cls==='clone'?'🔴 клон':cls==='our'?'🟢 наш':'⚪ другой';
+    status.style.color='var(--green)';
+    status.textContent=`✅ Добавлен ${label}`;
+    inp.value='';
+    toast(`Добавлен арт. ${artId}: ${p.brand||p.name||'—'}`);
+  }catch(e){
+    status.style.color='var(--red)';
+    if(e.message==='not-found')
+      status.textContent='❌ Товар не найден';
+    else
+      status.textContent='❌ Ошибка загрузки';
+  }finally{
+    btn.disabled=false;
+  }
+}
 function fmt(n){ return n!=null?(+n).toLocaleString('ru'):'—'; }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function starsH(r){ const n=Math.round(+r||0); return '★'.repeat(Math.min(5,n))+'☆'.repeat(Math.max(0,5-n)); }
