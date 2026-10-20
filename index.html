@@ -200,14 +200,6 @@ const STAMP_B64="iVBORw0KGgoAAAANSUhEUgAAAkwAAAIaCAIAAABd0YV+AAAACXBIWXMAAAsSAAA
     <div id="wbLM" style="display:none" class="lm"><button class="bsm" onclick="more()">Загрузить ещё</button></div>
   </div>
 
-  <div class="ozon-banner">
-    <div class="ozon-left">
-      <div class="ozon-logo">OZON</div>
-      <div class="ozon-text"><b>Поиск на Ozon</b><br><span>Автопарсинг недоступен — Ozon блокирует зарубежные IP. Открыть вручную:</span></div>
-    </div>
-    <a class="ozon-btn" id="ozonLink" href="https://www.ozon.ru/search/?text=easyform" target="_blank">Открыть на Ozon →</a>
-  </div>
-
   <div class="cc" id="complaint">
     <div class="ch">
       <span class="ct">⚠️ Заявка в службу поддержки WB</span>
@@ -341,9 +333,9 @@ function updKPI(){
 
 function updAnalytics(){
   const all=S.products;
-  if(!all.length){ document.getElementById('analyticsBlock').style.display='none'; return; }
-  document.getElementById('analyticsBlock').style.display='grid';
+  if(!all.length) return;
 
+  if(false){ // блок аналитики скрыт
   // 1. Топ брендов — СРЕДНЕЕ отзывов на карточку бренда
   const brandMap={};
   all.forEach(p=>{
@@ -465,6 +457,7 @@ function updAnalytics(){
         </tr>`).join('')}</tbody>
       </table>`
     : `<div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Нет данных</div>`;
+  } // end if(false)
 }
 
 function renderT(){
@@ -630,10 +623,37 @@ async function genPDFs(){
   const startNum=getNextClaimNum();
   const dateStr=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
 
-  // Сначала делаем скриншоты всех клонов через thum.io
+  // Сначала делаем скриншоты всех клонов через thum.io (через Image + canvas для обхода CORS)
   progText.textContent=`Делаем скриншоты карточек (${clones.length})...`;
   progFill.style.width='0%';
   if(!window._screenshots) window._screenshots={};
+
+  async function fetchScreenshot(artId, wbUrl){
+    return new Promise((resolve)=>{
+      const thumUrl=`https://image.thum.io/get/width/1280/crop/900/png/${wbUrl}`;
+      const img=new Image();
+      img.crossOrigin='anonymous';
+      img.onload=()=>{
+        try{
+          const canvas=document.createElement('canvas');
+          canvas.width=img.naturalWidth||1280;
+          canvas.height=img.naturalHeight||900;
+          const ctx=canvas.getContext('2d');
+          ctx.drawImage(img,0,0);
+          canvas.toBlob(blob=>{
+            if(blob){
+              blob.arrayBuffer().then(buf=>{ resolve(new Uint8Array(buf)); }).catch(()=>resolve(null));
+            } else { resolve(null); }
+          },'image/png');
+        }catch(e){ resolve(null); }
+      };
+      img.onerror=()=>resolve(null);
+      // Таймаут 15 секунд
+      setTimeout(()=>resolve(null), 15000);
+      img.src=thumUrl;
+    });
+  }
+
   for(let si=0;si<clones.length;si++){
     const sp=clones[si];
     const artId=String(sp.id);
@@ -641,16 +661,12 @@ async function genPDFs(){
       try{
         progText.textContent=`Скриншот ${si+1}/${clones.length}: арт. ${artId}...`;
         const wbUrl=sp.url||`https://www.wildberries.ru/catalog/${artId}/detail.aspx`;
-        const thumUrl=`https://image.thum.io/get/width/1280/crop/900/png/${encodeURIComponent(wbUrl)}`;
-        const resp=await fetch(thumUrl);
-        if(resp.ok){
-          const buf=await resp.arrayBuffer();
-          window._screenshots[artId]=new Uint8Array(buf);
-        }
+        const data=await fetchScreenshot(artId, wbUrl);
+        if(data) window._screenshots[artId]=data;
       }catch(e){ /* скриншот не критичен */ }
     }
     progFill.style.width=`${Math.round((si+1)/clones.length*50)}%`;
-    await new Promise(r=>setTimeout(r,100));
+    await new Promise(r=>setTimeout(r,200));
   }
 
   for(let i=0;i<clones.length;i++){
@@ -969,7 +985,7 @@ async function captureScreenshot(artId, cardUrl){
 
   try{
     // thum.io — бесплатный сервис скриншотов без API-ключа
-    const thumbUrl=`https://image.thum.io/get/width/1280/crop/900/png/${encodeURIComponent(cardUrl)}`;
+    const thumbUrl=`https://image.thum.io/get/width/1280/crop/900/png/${cardUrl}`;
     const resp=await fetch(thumbUrl,{signal:AbortSignal.timeout(20000)});
     if(!resp.ok) throw new Error('http '+resp.status);
     const blob=await resp.blob();
