@@ -183,29 +183,6 @@ const STAMP_B64="iVBORw0KGgoAAAANSUhEUgAAAkwAAAIaCAIAAABd0YV+AAAACXBIWXMAAAsSAAA
     <div class="kpi"><div class="kpi-l">Сред. отзывов на карточку</div><div class="kpi-v cbl" id="kAvgRev">—</div><div class="kpi-s" id="kAvgRevSub">по всей выдаче</div></div>
   </div>
 
-  <div class="analytics-grid" id="analyticsBlock" style="display:none">
-
-    <div class="acard">
-      <div class="acard-title">🏆 Топ брендов <span class="acard-sub">среднее отзывов на карточку бренда</span></div>
-      <div id="brandBars"></div>
-    </div>
-
-    <div class="acard">
-      <div class="acard-title">💰 Ценовые сегменты <span class="acard-sub">распределение по выдаче</span></div>
-      <div id="priceSegments"></div>
-    </div>
-
-    <div class="acard">
-      <div class="acard-title">📍 Наши позиции в поиске</div>
-      <div id="ourPositions"></div>
-    </div>
-
-    <div class="acard">
-      <div class="acard-title">👀 Кто рядом <span class="acard-sub">±3 позиции от наших карточек</span></div>
-      <div id="nearbyCompetitors"></div>
-    </div>
-
-  </div>
 
   <div class="sec">
     <div class="sh">
@@ -237,7 +214,6 @@ const STAMP_B64="iVBORw0KGgoAAAANSUhEUgAAAkwAAAIaCAIAAABd0YV+AAAACXBIWXMAAAsSAAA
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <button class="cp" onclick="copyC()">Скопировать текст</button>
         <button class="cpdf" id="pdfBtn" onclick="genPDFs()">📄 Сгенерировать заявления PDF</button>
-          <button class="cpdf" onclick="exportForScript()" style="background:#1A1A18" title="Экспорт списка клонов для локального скрипта wb_submit.py">💾 Экспорт для скрипта</button>
       </div>
     </div>
     <div class="cb">
@@ -520,9 +496,6 @@ function renderT(){
       :inWL
         ?`<button onclick="event.stopPropagation();toggleWL(${p.id})" style="font-size:10px;padding:3px 8px;border:1px solid var(--green-border);background:var(--green-bg);border-radius:5px;cursor:pointer;color:var(--green);white-space:nowrap" title="Вернуть в клоны">↩ вернуть</button>`
         :'';
-    const wbBtn=cls==='clone'
-      ?`<button onclick="event.stopPropagation();fillWBForm(${JSON.stringify({id:p.id,url:p.url,supplier:p.supplier||'',brand:p.brand||'',name:p.name||''})})" style="font-size:10px;padding:3px 8px;border:none;background:#CB11AB;border-radius:5px;cursor:pointer;color:#fff;white-space:nowrap;font-weight:600" title="Открыть форму WB и заполнить">📋 подать →</button>`
-      :'';
     return `<tr onclick="window.open('${esc(p.url)}','_blank')">
       <td><span class="pn ${rank<=10?'ptop':''}">${rank}</span></td>
       <td>${tag}</td>
@@ -531,7 +504,7 @@ function renderT(){
       <td><span class="pm">${fmt(p.price)} ₽</span>${disc?`<span class="pd">−${disc}%</span>`:''} ${p.oldPrice&&p.oldPrice!==p.price?`<br><span class="po">${fmt(p.oldPrice)} ₽</span>`:''}</td>
       <td><span class="stars">${starsH(p.rating)}</span> ${p.rating?(+p.rating).toFixed(1):'—'}</td>
       <td class="${rc}">${fmt(rev)}</td>
-      <td style="white-space:nowrap;display:flex;gap:4px;align-items:center;flex-wrap:wrap">${wlBtn}${wbBtn}&nbsp;<a class="tl" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">открыть →</a></td>
+      <td style="white-space:nowrap;display:flex;gap:4px;align-items:center;flex-wrap:wrap">${wlBtn}&nbsp;<a class="tl" href="${esc(p.url)}" target="_blank" onclick="event.stopPropagation()">Смотреть</a></td>
     </tr>`;
   };
 
@@ -657,11 +630,34 @@ async function genPDFs(){
   const startNum=getNextClaimNum();
   const dateStr=new Date().toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'});
 
+  // Сначала делаем скриншоты всех клонов через thum.io
+  progText.textContent=`Делаем скриншоты карточек (${clones.length})...`;
+  progFill.style.width='0%';
+  if(!window._screenshots) window._screenshots={};
+  for(let si=0;si<clones.length;si++){
+    const sp=clones[si];
+    const artId=String(sp.id);
+    if(!window._screenshots[artId]){
+      try{
+        progText.textContent=`Скриншот ${si+1}/${clones.length}: арт. ${artId}...`;
+        const wbUrl=sp.url||`https://www.wildberries.ru/catalog/${artId}/detail.aspx`;
+        const thumUrl=`https://image.thum.io/get/width/1280/crop/900/png/${encodeURIComponent(wbUrl)}`;
+        const resp=await fetch(thumUrl);
+        if(resp.ok){
+          const buf=await resp.arrayBuffer();
+          window._screenshots[artId]=new Uint8Array(buf);
+        }
+      }catch(e){ /* скриншот не критичен */ }
+    }
+    progFill.style.width=`${Math.round((si+1)/clones.length*50)}%`;
+    await new Promise(r=>setTimeout(r,100));
+  }
+
   for(let i=0;i<clones.length;i++){
     const p=clones[i];
     const num=startNum+i;
     progText.textContent=`Генерируем заявление ${i+1} из ${clones.length}: арт. ${p.id}`;
-    progFill.style.width=`${Math.round((i+1)/clones.length*100)}%`;
+    progFill.style.width=`${50+Math.round((i+1)/clones.length*50)}%`;
 
     const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     // Встраиваем кириллический шрифт DejaVu Sans
